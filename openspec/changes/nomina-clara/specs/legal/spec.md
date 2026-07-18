@@ -113,17 +113,24 @@ The breakdown SHALL include: concept name (Spanish), hours, ordinary hour value,
 ### 2.5 Grand Total
 
 ```
-TOTAL = base_pay + auxilio_transporte + Σ(concept_subtotals)
+TOTAL = base_pay + auxilio_transporte + Σ(concept_additional)
 ```
 
-Where each concept_subtotal = hours × hour_value × (multiplier - 1)
-(Only the *additional* amount from surcharges, not the base value)
+Where:
+- `base_pay = salary ÷ 2` cubre 105 horas ordinarias (7h/día × 15 días)
+- Para **recargos sobre horas ordinarias** (nocturno, festivo): `additional = hours × hour_value × (multiplier - 1)` — solo el excedente, porque basePay ya cubre la hora base
+- Para **horas extra** (OT day, OT night, holiday OT day, holiday OT night): `additional = hours × hour_value × multiplier` — valor completo, porque son horas adicionales NO cubiertas por basePay
 
-**EXCEPTION** for holiday/OT concepts where the multiplier already includes the base ordinary value, so:
-- For holiday ordinary (×1.90): additional = hours × hour_value × 0.90
-- For OT day (×1.25): additional = hours × hour_value × 0.25
-- For holiday OT day (×2.15): additional = hours × hour_value × 1.15
-- For holiday OT night (×2.65): additional = hours × hour_value × 1.65
+**Desglose:**
+
+| Concepto | Tipo | Fórmula adicional |
+|---|---|---|
+| Recargo nocturno (×1.35) | Recargo ordinario | hours × hour_value × 0.35 |
+| Recargo dom/festivo (×1.90) | Recargo ordinario | hours × hour_value × 0.90 |
+| Hora extra diurna (×1.25) | Hora extra | hours × hour_value × 1.25 |
+| Hora extra nocturna (×1.75) | Hora extra | hours × hour_value × 1.75 |
+| Hora extra diurna dom/fest (×2.15) | Hora extra | hours × hour_value × 2.15 |
+| Hora extra nocturna dom/fest (×2.65) | Hora extra | hours × hour_value × 2.65 |
 
 The GRAND TOTAL displayed SHALL be: base_pay + auxilio + all additional amounts.
 

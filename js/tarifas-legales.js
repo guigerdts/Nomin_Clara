@@ -243,10 +243,20 @@ function calculateBreakdown(params) {
    * @param {number} surchargePct - Porcentaje de recargo (ej. 35)
    * @param {string} legalRef - Referencia legal (opcional)
    */
-  function addConcept(label, hours, multiplier, surchargePct, legalRef) {
+  // Las horas EXTRA no están cubiertas por basePay (que paga solo 105h ordinarias),
+  // así que su valor completo (base + recargo) va a extraTotal.
+  // Los recargos sobre horas ORDINARIAS (nocturno, festivo) sí están cubiertos
+  // por basePay, así que solo el excedente (multiplier - 1) va a extraTotal.
+  const OT_MULTIPLIERS = new Set([
+    RATES.MULTIPLIERS.OT_DAY,
+    RATES.MULTIPLIERS.OT_NIGHT,
+    RATES.MULTIPLIERS.HOLIDAY_OT_DAY,
+    RATES.MULTIPLIERS.HOLIDAY_OT_NIGHT
+  ]);
+
+  function addConcept(label, hours, multiplier, surchargePct, legalRef, isOT) {
     if (!hours || hours <= 0) return;
     const subtotal = hours * hourValue * multiplier;
-    // Solo el valor ADICIONAL por recargo (no el valor base de la hora ordinaria)
     const surchargeOnly = hours * hourValue * (multiplier - 1);
     entries.push({
       label,
@@ -258,7 +268,9 @@ function calculateBreakdown(params) {
       surchargeOnly,
       legalRef: legalRef || ''
     });
-    extraTotal += subtotal;
+    // OT no está cubierto por basePay → valor completo
+    // Recargos ordinarios sí están cubiertos por basePay → solo adicional
+    extraTotal += isOT ? subtotal : surchargeOnly;
   }
 
   // 1. Recargo nocturno ordinario (+35%)
@@ -267,7 +279,8 @@ function calculateBreakdown(params) {
     nightSurcharge,
     RATES.MULTIPLIERS.NIGHT,
     RATES.SURCHARGES.NIGHT * 100,
-    'CST Art. 168'
+    'CST Art. 168',
+    false
   );
 
   // 2. Hora extra diurna (+25%)
@@ -276,7 +289,8 @@ function calculateBreakdown(params) {
     dayOT,
     RATES.MULTIPLIERS.OT_DAY,
     RATES.SURCHARGES.OT_DAY * 100,
-    'CST Art. 179'
+    'CST Art. 179',
+    true
   );
 
   // 3. Hora extra nocturna (+75%)
@@ -285,7 +299,8 @@ function calculateBreakdown(params) {
     nightOT,
     RATES.MULTIPLIERS.OT_NIGHT,
     RATES.SURCHARGES.OT_NIGHT * 100,
-    'CST Art. 179, Ley 2466'
+    'CST Art. 179, Ley 2466',
+    true
   );
 
   // 4. Recargo dominical/festivo ordinario (+90%)
@@ -294,7 +309,8 @@ function calculateBreakdown(params) {
     holidaySurcharge,
     RATES.MULTIPLIERS.HOLIDAY,
     RATES.SURCHARGES.HOLIDAY * 100,
-    'CST Art. 179'
+    'CST Art. 179',
+    false
   );
 
   // 5. Recargo nocturno + festivo combinado (+125%)
@@ -309,7 +325,8 @@ function calculateBreakdown(params) {
     holidayDayOT,
     RATES.MULTIPLIERS.HOLIDAY_OT_DAY,
     RATES.SURCHARGES.HOLIDAY_OT_DAY * 100,
-    'CST Art. 179, Ley 2466'
+    'CST Art. 179, Ley 2466',
+    true
   );
 
   // 7. Hora extra nocturna dominical/festiva (+165% = ×2.65)
@@ -318,7 +335,8 @@ function calculateBreakdown(params) {
     holidayNightOT,
     RATES.MULTIPLIERS.HOLIDAY_OT_NIGHT,
     RATES.SURCHARGES.HOLIDAY_OT_NIGHT * 100,
-    'CST Art. 179, Ley 2466'
+    'CST Art. 179, Ley 2466',
+    true
   );
 
   const grandTotal = basePay + transport + extraTotal;

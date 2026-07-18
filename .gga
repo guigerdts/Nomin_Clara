@@ -1,0 +1,6 @@
+PROVIDER="opencode"
+FILE_PATTERNS="*.html,*.css,*.js"
+EXCLUDE_PATTERNS="*.min.js,*.min.css"
+RULES_FILE="AGENTS.md"
+STRICT_MODE="true"
+TIMEOUT="300"

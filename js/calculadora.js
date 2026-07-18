@@ -219,6 +219,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (values.salary <= 0) {
       resultsCard.classList.add('hidden');
+      document.getElementById('salary-error') &&
+        (document.getElementById('salary-error').textContent = 'El salario debe ser mayor a $0');
       return;
     }
 

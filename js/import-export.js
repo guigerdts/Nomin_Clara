@@ -19,6 +19,10 @@
 function exportToFile(alias, filename) {
   try {
     const data = exportAllData();
+    if (data === '[]' || data === 'null') {
+      showToast('No hay registros para exportar. Guardá algunos cálculos primero.', 'error');
+      return;
+    }
     const name = filename || `nomina-clara-${alias || 'datos'}-${today()}.json`;
     downloadBlob(data, name, 'application/json');
     showToast('Datos exportados correctamente.', 'success');
