@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Nómina Clara — Calcula y verifica tu pago de nómina quincenal. Horas extra, recargos nocturnos y festivos según la ley colombiana.">
+  <title>Nómina Clara — Calculadora</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header / Navbar -->
+    <header class="navbar">
+      <div class="navbar-inner">
+        <a href="index.html" class="navbar-brand">
+          <span class="brand-icon">📋</span>
+          <span class="brand-text">Nómina Clara</span>
+        </a>
+        <nav class="navbar-nav">
+          <a href="index.html" class="nav-link active">Calculadora</a>
+          <a href="comparar.html" class="nav-link">Comparar</a>
+        </nav>
+        <button id="theme-toggle" class="btn btn-icon" aria-label="Cambiar modo oscuro/claro">
+          <span id="theme-icon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+      <div class="page-header">
+        <h1>Calculadora de Nómina</h1>
+        <p class="subtitle">Verificá si tus horas extra, recargos nocturnos y festivos se están pagando correctamente según la ley colombiana (Ley 2466/2025).</p>
+      </div>
+
+      <div class="grid-2col">
+        <!-- Form Column -->
+        <div class="card" id="form-card">
+          <h2>Tus datos</h2>
+          <form id="calc-form" novalidate>
+            <!-- Salario -->
+            <div class="field-group">
+              <label for="salary">Salario mensual base (COP)</label>
+              <input type="number" id="salary" name="salary" min="0" step="1000"
+                     placeholder="Ej: 2600000" required>
+              <span class="field-hint">Tu salario mensual sin incluir auxilio de transporte ni bonificaciones.</span>
+            </div>
+
+            <!-- Alias -->
+            <div class="field-group">
+              <label for="alias">Tu nombre o alias</label>
+              <input type="text" id="alias" name="alias" maxlength="60"
+                     placeholder="Ej: María López" autocomplete="name">
+              <span class="field-hint">Para identificar tus registros en la comparativa.</span>
+            </div>
+
+            <!-- Transporte (auto) -->
+            <div id="transport-section" class="field-group hidden">
+              <label>Auxilio de transporte</label>
+              <div class="transport-display">
+                <span id="transport-status" class="badge badge-muted">Verificando...</span>
+                <span id="transport-amount" class="monetary">$0</span>
+                <span id="transport-label" class="monetary"></span>
+                <span class="field-hint">Aplica automáticamente si tu salario ≤ 2 SMMLV ($2.847.000).</span>
+              </div>
+            </div>
+
+            <hr class="divider">
+
+            <h3>Horas trabajadas en la quincena</h3>
+            <p class="field-hint">Ingresá las cantidades de cada tipo de hora trabajada en los últimos 15 días.</p>
+
+            <div class="hours-grid">
+              <!-- Hora extra diurna -->
+              <div class="field-group">
+                <label for="day-ot">
+                  Horas extra diurnas
+                  <span class="tooltip-trigger" data-tip="Horas extra trabajadas entre 6:00am y 7:00pm. Recargo: +25% (CST Art. 179).">ⓘ</span>
+                </label>
+                <input type="number" id="day-ot" name="day-ot" min="0" step="0.5" value="0" placeholder="0">
+              </div>
+
+              <!-- Hora extra nocturna -->
+              <div class="field-group">
+                <label for="night-ot">
+                  Horas extra nocturnas
+                  <span class="tooltip-trigger" data-tip="Horas extra entre 7:00pm y 6:00am. Recargo: +75% (CST Art. 179, Ley 2466).">ⓘ</span>
+                </label>
+                <input type="number" id="night-ot" name="night-ot" min="0" step="0.5" value="0" placeholder="0">
+              </div>
+
+              <!-- Recargo nocturno ordinario -->
+              <div class="field-group">
+                <label for="night-surcharge">
+                  Recargo nocturno (ordinario)
+                  <span class="tooltip-trigger" data-tip="Horas ORDINARIAS entre 7:00pm y 6:00am (no extra). Recargo: +35% (CST Art. 168).">ⓘ</span>
+                </label>
+                <input type="number" id="night-surcharge" name="night-surcharge" min="0" step="0.5" value="0" placeholder="0">
+              </div>
+
+              <!-- Hora extra diurna dom/fest -->
+              <div class="field-group">
+                <label for="holiday-day-ot">
+                  H. extra diurna dom/fest
+                  <span class="tooltip-trigger" data-tip="Horas extra en domingo/festivo en jornada diurna. Multiplicador: ×2.15 (215%) (CST Art. 179, Ley 2466).">ⓘ</span>
+                </label>
+                <input type="number" id="holiday-day-ot" name="holiday-day-ot" min="0" step="0.5" value="0" placeholder="0">
+              </div>
+
+              <!-- Hora extra nocturna dom/fest -->
+              <div class="field-group">
+                <label for="holiday-night-ot">
+                  H. extra nocturna dom/fest
+                  <span class="tooltip-trigger" data-tip="Horas extra en domingo/festivo en jornada nocturna. Multiplicador: ×2.65 (265%) (CST Art. 179, Ley 2466).">ⓘ</span>
+                </label>
+                <input type="number" id="holiday-night-ot" name="holiday-night-ot" min="0" step="0.5" value="0" placeholder="0">
+              </div>
+
+              <!-- Recargo dom/fest ordinario -->
+              <div class="field-group">
+                <label for="holiday-surcharge">
+                  Recargo dom/fest (ordinario)
+                  <span class="tooltip-trigger" data-tip="Horas ORDINARIAS trabajadas en domingo o festivo. Recargo: +90% (CST Art. 179).">ⓘ</span>
+                </label>
+                <input type="number" id="holiday-surcharge" name="holiday-surcharge" min="0" step="0.5" value="0" placeholder="0">
+              </div>
+            </div>
+
+            <!-- OT Warnings -->
+            <div id="ot-warning" class="alert alert-warning hidden">
+              <strong>⚠️ Límites de horas extra</strong>
+              <ul id="ot-warning-list"></ul>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions">
+              <button type="button" id="calc-btn" class="btn btn-primary">Calcular</button>
+              <button type="button" id="clear-btn" class="btn btn-secondary">Limpiar</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Results Column -->
+        <div class="card hidden" id="results-card">
+          <h2>Desglose de pago</h2>
+
+          <div class="breakdown-summary">
+            <div class="summary-row">
+              <span>Valor hora ordinaria:</span>
+              <span class="monetary" id="hour-value-display">$0</span>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="breakdown-table" id="breakdown-table">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th class="text-right">Horas</th>
+                  <th class="text-right">Valor hora</th>
+                  <th class="text-right">Recargo</th>
+                  <th class="text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody id="breakdown-body"></tbody>
+            </table>
+          </div>
+
+          <div class="totals">
+            <div class="total-row">
+              <span>Salario base (quincena):</span>
+              <span class="monetary" id="base-pay">$0</span>
+            </div>
+            <div class="total-row">
+              <span>Auxilio de transporte:</span>
+              <span class="monetary" id="transport-display">$0</span>
+            </div>
+            <div class="total-row">
+              <span>Total recargos y extras:</span>
+              <span class="monetary" id="extra-total">$0</span>
+            </div>
+            <div class="total-row total-grand">
+              <span><strong>GRAN TOTAL QUINCENA:</strong></span>
+              <span class="monetary" id="grand-total"><strong>$0</strong></span>
+            </div>
+          </div>
+
+          <!-- Comparación con pago real -->
+          <div id="comparison-section" class="hidden">
+            <hr class="divider">
+            <h3>¿Cuánto te pagaron realmente?</h3>
+            <div class="field-group">
+              <input type="number" id="actual-pay" name="actual-pay" min="0" step="1000"
+                     placeholder="Ej: 1350000">
+              <span class="field-hint">Ingresá lo que aparece en tu comprobante de pago para comparar.</span>
+            </div>
+            <div id="difference-alert" class="alert hidden">
+              <span id="difference-amount"></span>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="result-actions">
+            <button type="button" id="save-btn" class="btn btn-primary">💾 Guardar registro</button>
+            <button type="button" id="export-btn" class="btn btn-secondary">📤 Exportar mis datos</button>
+            <button type="button" id="print-btn" class="btn btn-secondary">🖨️ Imprimir</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Section -->
+      <div class="card" id="history-card">
+        <h2>Historial de quincenas</h2>
+
+        <div id="history-empty" class="empty-state">
+          <p>Todavía no hay registros guardados. Calculá tu nómina y guardala para ver el historial.</p>
+        </div>
+
+        <div id="history-table" class="hidden">
+          <div class="chart-wrapper">
+            <canvas id="evolution-chart" class="hidden"></canvas>
+          </div>
+          <div class="table-wrapper">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Quincena</th>
+                  <th>Nombre</th>
+                  <th class="text-right">Salario</th>
+                  <th class="text-right">Calculado</th>
+                  <th class="text-right">Pagado</th>
+                  <th class="text-right">Diferencia</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p class="legal-disclaimer">
+          <strong>Nómina Clara</strong> — Herramienta informativa de verificación salarial.
+          Los cálculos se basan en la Ley 2466 de 2025 (vigente desde julio 2026) y el Código Sustantivo del Trabajo.
+          Consulte con un contador o abogado laboral para decisiones formales.
+        </p>
+        <p class="version">v1.0.0</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // Dark mode toggle (compartido entre páginas)
+    document.addEventListener('DOMContentLoaded', function() {
+      let saved = 'light';
+      try { saved = localStorage.getItem('nomina-clara-theme') || 'light'; } catch(e) {}
+      document.documentElement.setAttribute('data-theme', saved);
+      document.getElementById('theme-icon').textContent = saved === 'dark' ? '☀️' : '🌙';
+      document.getElementById('theme-toggle').addEventListener('click', function() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('nomina-clara-theme', next);
+        document.getElementById('theme-icon').textContent = next === 'dark' ? '☀️' : '🌙';
+      });
+    });
+  </script>
+  <script src="js/tarifas-legales.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/import-export.js"></script>
+  <script src="js/calculadora.js"></script>
+</body>
+</html>

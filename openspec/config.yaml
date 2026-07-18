@@ -1,0 +1,39 @@
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Tech stack: Static web (HTML5 + CSS3 + JavaScript vanilla)
+  Architecture: Client-only SPA, no backend, no build tools
+  Testing: None detected (static web, no test runner available)
+  Style: CSS custom properties, responsive design, vanilla JS
+  Strict TDD: false (no test runner available)
+
+rules:
+  proposal:
+    - Include scope boundaries and non-goals
+    - Document business rules and legal references
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Reference Colombian labor law articles
+  design:
+    - Include data flow diagrams for complex calculations
+    - Document architecture decisions with rationale
+    - Separate concerns: legal rates, calculations, UI, storage
+  tasks:
+    - Group by feature area, use hierarchical numbering
+    - Keep tasks completable in one session
+    - Order by dependency: legal rates first, then calculator, then comparison
+  apply:
+    guidelines:
+      - Use vanilla JS, no frameworks or libraries
+      - Keep legal rates in a separate, well-commented file
+      - Use CSS custom properties for theming
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: ""
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
