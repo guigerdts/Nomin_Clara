@@ -425,10 +425,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // --- Eventos ---
 
+  // Click en "Calcular"
+  document.getElementById('calc-btn').addEventListener('click', function (e) {
+    e.preventDefault();
+    // Limpiar error previo
+    const salaryErr = document.getElementById('salary-error');
+    if (salaryErr) salaryErr.textContent = '';
+    calculate();
+  });
+
   // Recalcular en tiempo real al cambiar cualquier input
   form.addEventListener('input', function () {
     const salary = parseFloat(salaryInput.value) || 0;
     updateTransportDisplay(salary);
+    // Limpiar error de salario
+    const salaryErr = document.getElementById('salary-error');
+    if (salaryErr) salaryErr.textContent = '';
     if (salary > 0) {
       calculate();
     } else {
