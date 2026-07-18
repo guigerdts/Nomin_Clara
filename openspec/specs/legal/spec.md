@@ -127,6 +127,7 @@ Where:
 |---|---|---|
 | Recargo nocturno (×1.35) | Recargo ordinario | hours × hour_value × 0.35 |
 | Recargo dom/festivo (×1.90) | Recargo ordinario | hours × hour_value × 0.90 |
+| Recargo nocturno + festivo (×2.25) | Recargo ordinario | hours × hour_value × 1.25 |
 | Hora extra diurna (×1.25) | Hora extra | hours × hour_value × 1.25 |
 | Hora extra nocturna (×1.75) | Hora extra | hours × hour_value × 1.75 |
 | Hora extra diurna dom/fest (×2.15) | Hora extra | hours × hour_value × 2.15 |

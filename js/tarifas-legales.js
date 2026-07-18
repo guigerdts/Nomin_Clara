@@ -215,6 +215,7 @@ function validateOTLimits(dayOT, nightOT, holidayDayOT, holidayNightOT) {
  * @param {number} params.holidayNightOT - Horas extra nocturnas dominicales/festivas
  * @param {number} params.nightSurcharge - Horas de recargo nocturno ordinario
  * @param {number} params.holidaySurcharge - Horas de recargo dominical/festivo ordinario
+ * @param {number} params.holidayNightSurcharge - Horas de recargo nocturno + festivo combinado
  * @returns {Object} Desglose completo
  */
 function calculateBreakdown(params) {
@@ -225,7 +226,8 @@ function calculateBreakdown(params) {
     holidayDayOT = 0,
     holidayNightOT = 0,
     nightSurcharge = 0,
-    holidaySurcharge = 0
+    holidaySurcharge = 0,
+    holidayNightSurcharge = 0
   } = params;
 
   const hourValue = getOrdinaryHourValue(salary);
@@ -313,11 +315,18 @@ function calculateBreakdown(params) {
     false
   );
 
-  // 5. Recargo nocturno + festivo combinado (+125%)
-  // Nota: No confundir con hora extra — esto es trabajo NOCTURNO ordinario
-  // en domingo/festivo.
-  // (No hay un campo separado en el formulario para esto combinado;
-  //  se incluye como concepto autocalculado si aplica.)
+  // 5. Recargo nocturno + festivo combinado (+125% = ×2.25)
+  // Horas ORDINARIAS en domingo/festivo en jornada nocturna.
+  // No confundir con hora extra — esto es trabajo ordinario en condiciones
+  // especiales que combinan recargo nocturno (+35%) + festivo (+90%).
+  addConcept(
+    'Recargo nocturno + festivo',
+    holidayNightSurcharge,
+    RATES.MULTIPLIERS.HOLIDAY_NIGHT,
+    RATES.SURCHARGES.HOLIDAY_NIGHT * 100,
+    'CST Art. 168, 179',
+    false
+  );
 
   // 6. Hora extra diurna dominical/festiva (+115% = ×2.15)
   addConcept(
@@ -350,6 +359,6 @@ function calculateBreakdown(params) {
     grandTotal,
     salary,
     totalOT: dayOT + nightOT + holidayDayOT + holidayNightOT,
-    totalSurchargeHours: nightSurcharge + holidaySurcharge
+    totalSurchargeHours: nightSurcharge + holidaySurcharge + holidayNightSurcharge
   };
 }

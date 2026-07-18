@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const holidayNightOTInput = document.getElementById('holiday-night-ot');
   const nightSurchargeInput = document.getElementById('night-surcharge');
   const holidaySurchargeInput = document.getElementById('holiday-surcharge');
+  const holidayNightSurchargeInput = document.getElementById('holiday-night-surcharge');
 
   // Resultados
   const resultsCard = document.getElementById('results-card');
@@ -209,7 +210,8 @@ document.addEventListener('DOMContentLoaded', function () {
       holidayDayOT: parseFloat(holidayDayOTInput.value) || 0,
       holidayNightOT: parseFloat(holidayNightOTInput.value) || 0,
       nightSurcharge: parseFloat(nightSurchargeInput.value) || 0,
-      holidaySurcharge: parseFloat(holidaySurchargeInput.value) || 0
+      holidaySurcharge: parseFloat(holidaySurchargeInput.value) || 0,
+      holidayNightSurcharge: parseFloat(holidayNightSurchargeInput.value) || 0
     };
   }
 
@@ -261,7 +263,8 @@ document.addEventListener('DOMContentLoaded', function () {
         holidayDayOT: values.holidayDayOT,
         holidayNightOT: values.holidayNightOT,
         nightSurcharge: values.nightSurcharge,
-        holidaySurcharge: values.holidaySurcharge
+        holidaySurcharge: values.holidaySurcharge,
+        holidayNightSurcharge: values.holidayNightSurcharge
       },
       breakdown: breakdown.entries,
       totalCalculated: breakdown.grandTotal,
