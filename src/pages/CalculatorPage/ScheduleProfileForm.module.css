@@ -18,15 +18,50 @@
 .dayCheckbox:hover { background: var(--color-surface-hover); }
 .dayCheckbox input[type="checkbox"]:checked + span { color: var(--color-primary); font-weight: 600; }
 
+.dayScheduleBlock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.dayScheduleLabel {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-primary);
+  min-width: 32px;
+  padding-top: 4px;
+}
+
+.dayScheduleFields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: flex-end;
+  flex: 1;
+}
+
+.fieldLabelSm {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+}
+
 .timeInput, .lunchInput {
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-1) var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
-  max-width: 200px;
+  max-width: 160px;
 }
 .timeInput:focus, .lunchInput:focus {
   outline: none;
@@ -34,4 +69,36 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
+.copyGroup { display: flex; align-items: flex-end; padding-bottom: 2px; }
+
+.copySelect {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  max-width: 160px;
+}
+
 .validationError { font-size: var(--font-size-xs); color: var(--color-danger); margin-top: var(--space-1); }
+
+.collapsedBlock {
+  margin-top: var(--space-2);
+}
+
+.collapsedHint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin-bottom: var(--space-2);
+}
+
+.collapsedFields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-end;
+}

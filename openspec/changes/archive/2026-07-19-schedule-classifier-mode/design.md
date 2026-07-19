@@ -28,6 +28,14 @@ DayEntryForm ────────┘         ↑
 | Dynamic computus algorithm | Correct for all years, but complex and unused beyond 2026 | ❌ |
 | Hardcoded 2026 list | Same maintenance pattern as SMMLV/UVT; yearly manual update | ✅ |
 
+### Decision: Per-day schedule map (not single global schedule)
+
+| Option | Tradeoff | Decision |
+|--------|----------|----------|
+| Single entry/exit/lunch para todos los días | Simple pero no refleja la realidad colombiana (sábado reducido, 42h semanales) | ❌ |
+| `Record<DayOfWeek, DaySchedule>` con Partial | Cada día laboral tiene su propio horario; días que comparten horario usan la misma entrada; botón "usar mismo horario" evita repetir datos | ✅ |
+| Migration: old format → all days get same schedule | Perfiles guardados con formato viejo se migran sin pérdida | ✅ |
+
 ### Decision: 30-min granularity fractional-hour output
 
 All times input as HH:MM, internally converted to fractional hours (30-min blocks). Final category hours are truncated to 2 decimals to avoid IEEE 754 artifacts in the UI.
@@ -38,11 +46,19 @@ All times input as HH:MM, internally converted to fractional hours (30-min block
 export type InputMode = 'manual' | 'schedule';
 export type DayOfWeek = 'monday'|'tuesday'|'wednesday'|'thursday'|'friday'|'saturday'|'sunday';
 
+export interface DaySchedule {
+  entryTime: string;          // "07:00"
+  exitTime: string;           // "17:00"
+  lunchBreakMinutes: number;  // 60
+}
+
 export interface ScheduleProfile {
   workDays: DayOfWeek[];
-  entryTime: string;          // "08:00"
-  exitTime: string;           // "18:00"
-  lunchBreakMinutes: number;  // 60
+  schedules: Partial<Record<DayOfWeek, DaySchedule>>;
+  // schedules[day] exists for every day in workDays
+  // Migración desde formato legacy (entryTime/exitTime/lunchBreakMinutes):
+  // todos los workDays reciben el mismo DaySchedule.
+  // Legacy fields aún pueden existir en SavedRecord viejos.
 }
 
 export interface WorkedDay {
@@ -85,8 +101,10 @@ export function scheduleClassifier(input: ScheduleClassifierInput): PayrollInput
 **Algorithm per WorkedDay** (repeated for each day in the fortnight):
 
 1. Convert entry/exit to fractional hours, subtract lunch → `totalHours`
-2. Compute expected ordinary hours from profile: `exitTime - entryTime - lunchBreak` 
-   → `expectedDayHours` for any work day (ej. 08:00-18:00 + 60min lunch = 9h)
+2. Look up `DaySchedule` for this day-of-week from `profile.schedules[dow]`.
+   Compute expected ordinary hours: `entryTime - exitTime - lunchBreakMinutes`
+   → `expectedDayHours` (ej. Saturday: 07:00-14:00+0min = 7h; Mon-Fri: 07:00-17:00+60min = 9h)
+   Si el día no está en workDays → expected = 0 (todas las horas son OT)
 3. Split into day (06:00-18:59) vs night (19:00-05:59) blocks at 30-min resolution
 4. Classification matrix:
 
@@ -124,6 +142,17 @@ CalculatorPage
 - Switch clears the unrelated form state (schedule → manual: clears profile/days; manual → schedule: clears 7 fields)
 - Toggle label text explains mode purpose
 - Saved record includes `mode: InputMode` field
+
+**ScheduleProfileForm UX (per-day schedules):**
+- Días laborales: mismos checkboxes en fila (Lun-Sáb-Dom)
+- Al marcar un día, se muestra su propio bloque de entrada/salida/almuerzo
+- Botón "Usar mismo horario que..." para copiar el horario de otro día
+- Si todos los días marcados comparten el mismo horario, el formulario colapsa a una vista simple (un solo bloque visible) para no abrumar
+- Sábado se muestra con su propio horario editable
+
+**DayEntryForm changes (pre-fill from per-day schedule):**
+- Al agregar un día, `entryTime`/`exitTime`/`lunchBreakMinutes` se pre-llenan desde `profile.schedules[dayOfWeek(date)]`
+- No desde un campo único del profile
 
 ## Data Flow
 
@@ -164,6 +193,7 @@ Backward compatible: old records lack these fields → `mode` defaults to `'manu
 | Unit | `scheduleClassifier()` day-off | null entryTime → 0 for all fields |
 | Unit | `scheduleClassifier()` mixed day/night shift | Spanning 19:00 boundary → split correctly |
 | Unit | `scheduleClassifier()` overtime day | 9h day → 7 ordinary, 2 OT |
+| Unit | `scheduleClassifier()` **mixed per-day schedules** | Perfil con lunes-viernes 9h, sábado 6h. Worker trabaja 8h en sábado → 6h base + 2h OT (no 6.5h OT como daría un threshold único de 9h). Worker trabaja 10h en lunes → 9h base + 1h OT. |
 | Integration | CalculatorPage mode toggle | Manual→Schedule clears fields, Schedule→Manual clears profile |
 | Integration | Save+load schedule record | Works in history, loads without crash |
 | Integration | Adding a date fills default times from profile | Date picker → entry/exit pre-filled |
@@ -174,6 +204,15 @@ N/A — no routing, shell, subprocess, VCS/PR automation, executable-file classi
 
 ## Migration / Rollout
 
-No migration required. Old records work unchanged (they have `inputs: PayrollInput` directly). New records optionally carry `mode`, `scheduleProfile`, and `workedDays` fields. Rollback: revert CalculatorPage/PayrollForm, delete new components and lib files.
+### ScheduleProfile format migration
+Old-format `ScheduleProfile` records (with `entryTime`/`exitTime`/`lunchBreakMinutes` top-level fields) must be migrated on load:
+- Leer `entryTime`, `exitTime`, `lunchBreakMinutes` del perfil
+- Para cada `workDays[i]`, asignar `schedules[workDays[i]] = { entryTime, exitTime, lunchBreakMinutes }`
+- Eliminar los campos legacy del objeto
+
+La migración ocurre en el punto de carga (cuando se lee `SavedRecord` de localStorage), no en storage.ts — se transforma el objeto al cargarlo en CalculatorPage.
+
+### General
+Old records work unchanged (they have `inputs: PayrollInput` directly). Rollback: revert CalculatorPage/PayrollForm/ScheduleProfileForm/DayEntryForm, delete new lib changes.
 
 

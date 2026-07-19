@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import type { ScheduleProfile, WorkedDay } from '../../lib/types';
+import type { DayOfWeek, DaySchedule, ScheduleProfile, WorkedDay } from '../../lib/types';
+import { dayOfWeek } from '../../lib/scheduleClassifier';
 import styles from './DayEntryForm.module.css';
 
 interface DayEntryFormProps {
@@ -16,14 +17,20 @@ function formatDate(isoDate: string): string {
   return `${WEEKDAYS[date.getDay()]} ${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
 }
 
+function getDaySchedule(profile: ScheduleProfile, dow: DayOfWeek): DaySchedule {
+  return profile.schedules[dow] ?? { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 };
+}
+
 export function DayEntryForm({ days, profile, onChange }: DayEntryFormProps) {
   const [newDate, setNewDate] = useState('');
 
   const addDay = () => {
     if (!newDate || days.some(d => d.date === newDate)) return;
+    const dow = dayOfWeek(newDate);
+    const daySchedule = getDaySchedule(profile, dow);
     onChange([
       ...days,
-      { date: newDate, entryTime: profile.entryTime, exitTime: profile.exitTime, lunchBreakMinutes: profile.lunchBreakMinutes },
+      { date: newDate, entryTime: daySchedule.entryTime, exitTime: daySchedule.exitTime, lunchBreakMinutes: daySchedule.lunchBreakMinutes },
     ]);
     setNewDate('');
   };
@@ -33,9 +40,11 @@ export function DayEntryForm({ days, profile, onChange }: DayEntryFormProps) {
   };
 
   const toggleDayOff = (index: number, isOff: boolean) => {
+    const dow = dayOfWeek(days[index].date);
+    const daySchedule = getDaySchedule(profile, dow);
     updateDay(index, isOff
       ? { entryTime: null, exitTime: null, lunchBreakMinutes: null }
-      : { entryTime: profile.entryTime, exitTime: profile.exitTime, lunchBreakMinutes: profile.lunchBreakMinutes },
+      : { entryTime: daySchedule.entryTime, exitTime: daySchedule.exitTime, lunchBreakMinutes: daySchedule.lunchBreakMinutes },
     );
   };
 

@@ -177,7 +177,10 @@ Value: JSON array of record objects:
   totalCalculated: 3850000,
   totalActual: 3800000,    // user input, can be null
   difference: -50000,
-  createdAt: "2026-07-18T12:00:00Z"
+  createdAt: "2026-07-18T12:00:00Z",
+  mode?: 'manual' | 'schedule',           // input mode (optional — 'manual' default)
+  scheduleProfile?: ScheduleProfile,       // present when mode='schedule'
+  workedDays?: WorkedDay[]                 // present when mode='schedule'
 }
 ```
 

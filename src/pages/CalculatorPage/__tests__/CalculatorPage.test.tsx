@@ -310,6 +310,10 @@ describe('CalculatorPage — saveRecord with deductions and schedule mode', () =
       expect(screen.getByText(/perfil semanal/i)).toBeInTheDocument();
     });
 
+    // Add Monday (not in the new Tue-Fri default) to match test expectations
+    const monCheckbox = screen.getByLabelText('Lun');
+    fireEvent.click(monCheckbox);
+
     // Trigger scheduleProfile change by toggling "Sáb" day checkbox
     // (this makes onScheduleProfileChange fire, setting scheduleProfile state)
     const satCheckbox = screen.getByLabelText('Sáb');

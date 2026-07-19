@@ -7,8 +7,8 @@ Manual 7-field hour entry (dayOT, nightOT, holidayDayOT, etc.) is error-prone an
 ## Scope
 
 ### In Scope
-- Weekly schedule profile form (work days, entry/exit times, lunch break, 30-min granularity)
-- Day-by-day worked entry form with pre-filled suggestions from profile
+- Weekly schedule profile form — cada día laboral con su propio horario (entrada/salida/almuerzo), 30-min granularidad. Días que comparten horario pueden configurarse juntos.
+- Day-by-day worked entry form con pre-filled desde el horario del día específico de la semana
 - Auto-classification engine as pure function in `lib/` producing `PayrollInput`
 - Colombian fixed-date holiday list + `isHoliday()` detector
 - Mode toggle (Manual ↔ Schedule) in CalculatorPage with form clear on switch
@@ -40,7 +40,7 @@ Pure function in `lib/scheduleClassifier.ts` — zero changes to `calculateBreak
 
 | Area | Impact | Description |
 |------|--------|-------------|
-| `src/lib/types.ts` | Modified | Add `ScheduleProfile`, `WorkedDay`, `DayOfWeek` types |
+| `src/lib/types.ts` | Modified | `ScheduleProfile` now uses per-day `schedules` map en vez de entry/exit único |
 | `src/lib/holidays.ts` | New | Fixed-date Colombian holidays + `isHoliday()` |
 | `src/lib/scheduleClassifier.ts` | New | Pure classification engine |
 | `src/lib/storage.ts` | Modified | Optional schedule profile in `SavedRecord` |
@@ -53,7 +53,8 @@ Pure function in `lib/scheduleClassifier.ts` — zero changes to `calculateBreak
 
 | Risk | Likelihood | Mitigation |
 |------|------------|------------|
-| Colombian holiday complexity | High | Fixed-date only first; Easter-based marked TODO |
+| Per-day schedule complexity | Medium | UI debe permitir horarios distintos por día sin ser tedioso; botón "usar mismo horario" |
+| Migration (old profile format) | Low | Perfiles viejos sin schedules por día se migran: todos los días laborales reciben el único horario guardado |
 | UI scope creep | Medium | Ship mode toggle + profile form first, day-entry grid next |
 | Edge cases in classification | Low | 30-min grid, fractional hours with binary classification |
 | User confusion on modes | Low | Brief description at toggle explaining each mode |

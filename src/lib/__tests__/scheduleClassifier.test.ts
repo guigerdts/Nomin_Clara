@@ -5,7 +5,13 @@ import type { ScheduleClassifierInput, ScheduleProfile, WorkedDay } from '../typ
 
 const baseProfile: ScheduleProfile = {
   workDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-  entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60,
+  schedules: {
+    monday:    { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 },
+    tuesday:   { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 },
+    wednesday: { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 },
+    thursday:  { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 },
+    friday:    { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 },
+  },
 };
 
 function makeInput(days: WorkedDay[], salary = 1_750_905): ScheduleClassifierInput {
@@ -55,7 +61,13 @@ describe('scheduleClassifier', () => {
     // Since Monday is NOT in workDays → adjExp=0 → ALL 9h = holidayDayOT.
     const profileExcludeMon: ScheduleProfile = {
       workDays: ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-      entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60,
+      schedules: {
+        tuesday:   { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 },
+        wednesday: { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 },
+        thursday:  { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 },
+        friday:    { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 },
+        saturday:  { entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60 },
+      },
     };
     const result = scheduleClassifier({
       profile: profileExcludeMon,
@@ -139,4 +151,49 @@ describe('scheduleClassifier', () => {
     expect(result.holidayNightSurcharge).toBe(0);
     expect(result.holidayNightOT).toBe(0);
   });
+
+describe('per-day schedule (mixed)', () => {
+  const mixedProfile: ScheduleProfile = {
+    workDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+    schedules: {
+      monday:    { entryTime: '07:00', exitTime: '17:00', lunchBreakMinutes: 60 },
+      tuesday:   { entryTime: '07:00', exitTime: '17:00', lunchBreakMinutes: 60 },
+      wednesday: { entryTime: '07:00', exitTime: '17:00', lunchBreakMinutes: 60 },
+      thursday:  { entryTime: '07:00', exitTime: '17:00', lunchBreakMinutes: 60 },
+      friday:    { entryTime: '07:00', exitTime: '17:00', lunchBreakMinutes: 60 },
+      saturday:  { entryTime: '07:00', exitTime: '14:00', lunchBreakMinutes: 0 },
+    },
+  };
+
+  it('Saturday 07:00-16:00+0min = 9h worked vs 7h expected → 2h dayOT', () => {
+    const result = scheduleClassifier({
+      profile: mixedProfile,
+      workedDays: [{ date: '2026-07-11', entryTime: '07:00', exitTime: '16:00', lunchBreakMinutes: 0 }],
+      salary: 1_750_905,
+    });
+    expect(result.dayOT).toBe(2);
+    expect(result.nightOT).toBe(0);
+  });
+
+  it('Monday 07:00-18:00+60min = 10h vs 9h expected → 1h dayOT', () => {
+    const result = scheduleClassifier({
+      profile: mixedProfile,
+      workedDays: [{ date: '2026-07-06', entryTime: '07:00', exitTime: '18:00', lunchBreakMinutes: 60 }],
+      salary: 1_750_905,
+    });
+    expect(result.dayOT).toBe(1);
+    expect(result.nightOT).toBe(0);
+  });
+
+  it('Saturday exactly at expected 7h → 0 OT', () => {
+    // 07:00-14:00+0min = 7h worked == 7h expected
+    const result = scheduleClassifier({
+      profile: mixedProfile,
+      workedDays: [{ date: '2026-07-11', entryTime: '07:00', exitTime: '14:00', lunchBreakMinutes: 0 }],
+      salary: 1_750_905,
+    });
+    expect(result.dayOT).toBe(0);
+    expect(result.nightOT).toBe(0);
+  });
+});
 });

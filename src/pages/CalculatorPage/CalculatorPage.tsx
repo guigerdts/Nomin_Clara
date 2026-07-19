@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import type { PayrollInput, BreakdownResult, SavedRecord, DeductionsInput, DeductionsBreakdown, DeductionSplitMode, InputMode, ScheduleProfile, WorkedDay } from '../../lib/types';
+import type { PayrollInput, BreakdownResult, SavedRecord, DeductionsInput, DeductionsBreakdown, DeductionSplitMode, InputMode, DayOfWeek, DaySchedule, ScheduleProfile, WorkedDay } from '../../lib/types';
 import { calculateBreakdown, validateOTLimits } from '../../lib/rates';
 import { computeDeductions } from '../../lib/deductions';
 import { scheduleClassifier } from '../../lib/scheduleClassifier';
@@ -12,6 +12,34 @@ import { HistorySection } from './HistorySection';
 import { ActionButtons } from './ActionButtons';
 import { DeduccionesForm } from './DeduccionesForm';
 import { GlosarioRecargos } from '../../components/GlosarioRecargos';
+
+function migrateProfile(profile: unknown): ScheduleProfile | null {
+  if (!profile || typeof profile !== 'object') return null;
+  const p = profile as Record<string, unknown>;
+  if (p.schedules && typeof p.schedules === 'object') return p as unknown as ScheduleProfile; // already migrated
+  // Old format: has entryTime/exitTime/lunchBreakMinutes at top level
+  const workDays = p.workDays;
+  const entryTime = p.entryTime;
+  const exitTime = p.exitTime;
+  const lunchBreakMinutes = p.lunchBreakMinutes;
+  if (!Array.isArray(workDays) || typeof entryTime !== 'string') return null;
+  const schedules: Partial<Record<DayOfWeek, DaySchedule>> = {};
+  for (const day of workDays) {
+    schedules[day as DayOfWeek] = { entryTime, exitTime: typeof exitTime === 'string' ? exitTime : '18:00', lunchBreakMinutes: typeof lunchBreakMinutes === 'number' ? lunchBreakMinutes : 60 };
+  }
+  return { workDays: workDays as DayOfWeek[], schedules };
+}
+
+// Migrate old-format ScheduleProfile in ALL saved records on load
+function migrateSavedRecords(records: SavedRecord[]): SavedRecord[] {
+  return records.map(rec => {
+    if (rec.scheduleProfile && !('schedules' in rec.scheduleProfile)) {
+      const migrated = migrateProfile(rec.scheduleProfile);
+      return migrated ? { ...rec, scheduleProfile: migrated } : rec;
+    }
+    return rec;
+  });
+}
 
 const EMPTY_INPUTS: PayrollInput = {
   salary: 0,
@@ -38,7 +66,7 @@ export function CalculatorPage() {
   const [alias, setAlias] = useState('');
   const [result, setResult] = useState<BreakdownResult | null>(null);
   const [actualPay, setActualPay] = useState<number>(0);
-  const [records, setRecords] = useState<SavedRecord[]>(() => getAllRecords());
+  const [records, setRecords] = useState<SavedRecord[]>(() => migrateSavedRecords(getAllRecords()));
   const [warnings, setWarnings] = useState<string[]>([]);
   const [salaryError, setSalaryError] = useState('');
   const [deductionsInput, setDeductionsInput] = useState<DeductionsInput>({ ...EMPTY_DEDUCTIONS });
@@ -176,13 +204,13 @@ export function CalculatorPage() {
 
     try {
       saveRecord(record);
-      setRecords(getAllRecords());
+      setRecords(migrateSavedRecords(getAllRecords()));
       showToast('Registro guardado correctamente.', 'success');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error desconocido';
       showToast(`Error al guardar: ${msg}`, 'error');
     }
-  }, [inputs, alias, actualPay, deductionsInput, splitMode]);
+  }, [inputs, alias, actualPay, deductionsInput, splitMode, inputMode, scheduleProfile, workedDays]);
 
   const handleExport = useCallback(() => {
     try {
@@ -212,7 +240,7 @@ export function CalculatorPage() {
 
   const handleDeleteRecord = useCallback((id: string) => {
     deleteRecord(id);
-    setRecords(getAllRecords());
+    setRecords(migrateSavedRecords(getAllRecords()));
   }, []);
 
   const filteredRecords = alias.trim()

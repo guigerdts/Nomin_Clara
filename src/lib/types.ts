@@ -83,11 +83,15 @@ export type DeductionSplitMode = 'even' | 'second-fortnight' | 'first-fortnight'
 export type InputMode = 'manual' | 'schedule';
 export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
-export interface ScheduleProfile {
-  workDays: DayOfWeek[];
+export interface DaySchedule {
   entryTime: string;
   exitTime: string;
   lunchBreakMinutes: number;
+}
+
+export interface ScheduleProfile {
+  workDays: DayOfWeek[];
+  schedules: Partial<Record<DayOfWeek, DaySchedule>>;
 }
 
 export interface WorkedDay {

@@ -2,14 +2,14 @@ import type { DayOfWeek, PayrollInput, ScheduleClassifierInput, WorkedDay } from
 import { isHoliday } from './holidays';
 
 const DAY_START = 6 * 60, DAY_END = 19 * 60, HALF_HOUR = 30, HH = 0.5;
-const DOW: Record<number, DayOfWeek> = { 0: 'sunday', 1: 'monday', 2: 'tuesday', 3: 'wednesday', 4: 'thursday', 5: 'friday', 6: 'saturday' };
+export const DOW: Record<number, DayOfWeek> = { 0: 'sunday', 1: 'monday', 2: 'tuesday', 3: 'wednesday', 4: 'thursday', 5: 'friday', 6: 'saturday' };
 
 function toMin(t: string): number {
   const [h, m] = t.split(':').map(Number);
   return h * 60 + m;
 }
 
-function dayOfWeek(date: string): DayOfWeek {
+export function dayOfWeek(date: string): DayOfWeek {
   return DOW[new Date(date + 'T12:00:00').getDay()];
 }
 
@@ -46,12 +46,18 @@ function classifyDay(d: WorkedDay, exp: number, isWorkDay: boolean) {
 
 export function scheduleClassifier(input: ScheduleClassifierInput): PayrollInput {
   const { profile, workedDays, salary } = input;
-  const exp = (toMin(profile.exitTime) - toMin(profile.entryTime)) / 60 - profile.lunchBreakMinutes / 60;
+  const wdSet = new Set(profile.workDays);
   const acc = { dayOT: 0, nightOT: 0, nightSurcharge: 0, holidaySurcharge: 0, holidayDayOT: 0, holidayNightSurcharge: 0, holidayNightOT: 0 };
 
-  const wdSet = new Set(profile.workDays);
   for (const d of workedDays) {
-    const r = classifyDay(d, exp, wdSet.has(dayOfWeek(d.date)));
+    const dow = dayOfWeek(d.date);
+    const isWorkDay = wdSet.has(dow);
+    const daySchedule = profile.schedules[dow];
+    let exp = 0;
+    if (isWorkDay && daySchedule) {
+      exp = (toMin(daySchedule.exitTime) - toMin(daySchedule.entryTime)) / 60 - daySchedule.lunchBreakMinutes / 60;
+    }
+    const r = classifyDay(d, exp, isWorkDay);
     for (const k of Object.keys(acc) as (keyof typeof acc)[]) acc[k] += r[k];
   }
 
