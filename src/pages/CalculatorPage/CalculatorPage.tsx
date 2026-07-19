@@ -10,6 +10,7 @@ import { ResultsCard } from './ResultsCard';
 import { HistorySection } from './HistorySection';
 import { ActionButtons } from './ActionButtons';
 import { DeduccionesForm } from './DeduccionesForm';
+import { GlosarioRecargos } from '../../components/GlosarioRecargos';
 
 const EMPTY_INPUTS: PayrollInput = {
   salary: 0,
@@ -228,6 +229,8 @@ export function CalculatorPage() {
           onClear={handleClear}
         />
       )}
+
+      <GlosarioRecargos />
 
       <HistorySection
         records={filteredRecords}
