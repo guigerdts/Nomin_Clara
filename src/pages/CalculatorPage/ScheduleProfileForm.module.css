@@ -1,0 +1,37 @@
+.profileForm { margin-top: var(--space-4); }
+.subtitle { font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-bottom: var(--space-4); }
+
+.fieldGroup { display: flex; flex-direction: column; gap: 4px; margin-bottom: var(--space-4); }
+.label { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text); margin-bottom: var(--space-1); }
+
+.daysRow { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.dayCheckbox {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer; font-size: var(--font-size-sm);
+  transition: background 0.2s, border-color 0.2s;
+  user-select: none;
+}
+.dayCheckbox:hover { background: var(--color-surface-hover); }
+.dayCheckbox input[type="checkbox"]:checked + span { color: var(--color-primary); font-weight: 600; }
+
+.timeInput, .lunchInput {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  max-width: 200px;
+}
+.timeInput:focus, .lunchInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.validationError { font-size: var(--font-size-xs); color: var(--color-danger); margin-top: var(--space-1); }
