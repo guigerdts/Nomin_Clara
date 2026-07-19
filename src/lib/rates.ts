@@ -152,7 +152,7 @@ export function calculateBreakdown(params: PayrollInput): BreakdownResult {
   } = params;
 
   const hourValue = getOrdinaryHourValue(salary);
-  const transport = getTransportAllowance(salary);
+  const transport = getTransportAllowance(salary) / 2;
   const basePay = salary / 2;
 
   const entries: BreakdownEntry[] = [];

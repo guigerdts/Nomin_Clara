@@ -167,10 +167,18 @@ describe('calculateBreakdown', () => {
   it('returns base pay only when no extra hours', () => {
     const result = calculateBreakdown(baseInput);
     expect(result.basePay).toBeCloseTo(SMMLV / 2, 0);
-    expect(result.transport).toBe(TRANSPORT_ALLOWANCE_2026);
+    expect(result.transport).toBe(TRANSPORT_ALLOWANCE_2026 / 2);
     expect(result.extraTotal).toBe(0);
-    expect(result.grandTotal).toBeCloseTo(SMMLV / 2 + TRANSPORT_ALLOWANCE_2026, 0);
+    expect(result.grandTotal).toBeCloseTo(SMMLV / 2 + TRANSPORT_ALLOWANCE_2026 / 2, 0);
     expect(result.entries).toHaveLength(0);
+  });
+
+  it('transport allowance is half the monthly value in a quincena', () => {
+    const result = calculateBreakdown(baseInput);
+    expect(result.transport).toBe(TRANSPORT_ALLOWANCE_2026 / 2);
+    expect(result.transport).not.toBe(TRANSPORT_ALLOWANCE_2026);
+    // formatCOP(result.transport) → $124.548 (Math.round(124547.5))
+    expect(formatCOP(result.transport)).toBe('$124.548');
   });
 
   it('calculates day OT correctly', () => {
