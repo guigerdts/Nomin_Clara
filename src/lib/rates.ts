@@ -1,6 +1,7 @@
 import type { PayrollInput, BreakdownEntry, BreakdownResult } from './types';
+import { SMMLV } from './constants';
 
-export const SMMLV = 1423500;
+export { SMMLV };
 
 export const RATES = {
   WEEKLY_HOURS: 42,

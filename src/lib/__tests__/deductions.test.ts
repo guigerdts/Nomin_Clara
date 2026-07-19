@@ -6,9 +6,8 @@ import {
   computeDeductions,
   calculateNetPay,
   quincenaShare,
-  SMMLV_2026,
-  UVT_2026,
 } from '../deductions';
+import { SMMLV, UVT_2026 } from '../constants';
 import type { DeductionsInput } from '../types';
 
 // ─── calculateHealthPension ────────────────────────────────────────────────
@@ -23,8 +22,8 @@ describe('calculateHealthPension', () => {
   });
 
   it('works with salario minimo', () => {
-    const result = calculateHealthPension(SMMLV_2026);
-    expect(result.total).toBe(SMMLV_2026 * 0.08);
+    const result = calculateHealthPension(SMMLV);
+    expect(result.total).toBe(SMMLV * 0.08);
   });
 
   it('works with zero salary', () => {
@@ -38,7 +37,7 @@ describe('calculateHealthPension', () => {
 // ─── calculateSolidarityFund ──────────────────────────────────────────────
 
 describe('calculateSolidarityFund', () => {
-  const smmlv = SMMLV_2026; // 1.750.905
+  const smmlv = SMMLV; // 1.750.905
 
   it('returns 0% for salary < 4 SMMLV', () => {
     const result = calculateSolidarityFund(3_000_000, smmlv);
@@ -130,7 +129,7 @@ describe('estimateRetefuente', () => {
   it('returns 0 for salary below minimum threshold (<= 95 UVT after depuracion)', () => {
     // SMMLV: 1.750.905 → neto after aportes: 1.610.832.6 → 25% exenta: ~402.708
     // base: ~1.208.124 → UVT: ~23.07 → under 95
-    const result = estimateRetefuente(SMMLV_2026);
+    const result = estimateRetefuente(SMMLV);
     expect(result.applies).toBe(false);
     expect(result.amount).toBe(0);
     expect(result.baseDepurada).toBe(0);
@@ -195,7 +194,7 @@ describe('estimateRetefuente', () => {
   });
 
   it('returns empty warning when retefuente does not apply', () => {
-    const result = estimateRetefuente(SMMLV_2026);
+    const result = estimateRetefuente(SMMLV);
     expect(result.warningMessage).toBe('');
   });
 });
@@ -252,7 +251,7 @@ describe('computeDeductions', () => {
 
   it('does not include retefuente when toggled on but salary too low', () => {
     const input: DeductionsInput = { ...defaultInput, includeRetefuente: true };
-    const result = computeDeductions(SMMLV_2026, input);
+    const result = computeDeductions(SMMLV, input);
     expect(result.retefuente.applies).toBe(false);
     expect(result.retefuente.amount).toBe(0);
     expect(result.items.some(i => i.label === 'Retención en la fuente')).toBe(false);

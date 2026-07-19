@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { DeductionsInput, DeductionSplitMode } from '../../lib/types';
-import { SMMLV_2026, calculateSolidarityFund, calculateHealthPension } from '../../lib/deductions';
-import { formatCOP } from '../../lib/rates';
+import { calculateSolidarityFund, calculateHealthPension } from '../../lib/deductions';
+import { formatCOP, SMMLV } from '../../lib/rates';
 import styles from './DeduccionesForm.module.css';
 
 interface DeduccionesFormProps {
@@ -95,7 +95,7 @@ export function DeduccionesForm({ salary, values, onChange, splitMode, onSplitMo
       </label>
 
       {/* ── 2. Fondo Solidaridad Pensional ────────────────── */}
-      {salary >= 4 * SMMLV_2026 && solidarity.applies && (
+      {salary >= 4 * SMMLV && solidarity.applies && (
         <div className={styles.infoBlock}>
           <div className={styles.infoBlockHeader}>
             <strong>Fondo de Solidaridad Pensional</strong>
@@ -108,7 +108,7 @@ export function DeduccionesForm({ salary, values, onChange, splitMode, onSplitMo
           </p>
           <p className={styles.hint}>
             Se descuenta automáticamente si tu salario supera los 4 SMMLV ($
-            {formatCOP(4 * SMMLV_2026)}/mes).
+            {formatCOP(4 * SMMLV)}/mes).
           </p>
         </div>
       )}

@@ -18,11 +18,7 @@
  */
 
 import type { DeductionsBreakdown, DeductionsInput, DeductionSplitMode } from './types';
-
-// ─── Constants ──────────────────────────────────────────────────────────────
-
-export const SMMLV_2026 = 1_750_905;
-export const UVT_2026 = 52_374;
+import { SMMLV, UVT_2026 } from './constants';
 
 /** Art. 206 num. 10 ET — 25% renta exenta, tope 790 UVT/año */
 export const RENTA_EXENTA_ANNUAL_UVT = 790;
@@ -104,7 +100,7 @@ export function calculateHealthPension(monthlySalary: number): {
  */
 export function calculateSolidarityFund(
   monthlySalary: number,
-  smmlv: number = SMMLV_2026,
+  smmlv: number = SMMLV,
 ): {
   applies: boolean;
   percentage: number;

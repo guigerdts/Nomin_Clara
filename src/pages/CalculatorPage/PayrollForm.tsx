@@ -1,5 +1,5 @@
 import type { PayrollInput } from '../../lib/types';
-import { getTransportAllowance, formatCOP } from '../../lib/rates';
+import { getTransportAllowance, formatCOP, SMMLV } from '../../lib/rates';
 
 interface PayrollFormProps {
   values: PayrollInput;
@@ -138,7 +138,7 @@ export function PayrollForm({
               </span>
               <span className="monetary">{formatCOP(transport)}</span>
               <span className="field-hint">
-                Aplica automáticamente si tu salario ≤ 2 SMMLV ($2.847.000).
+                Aplica automáticamente si tu salario ≤ 2 SMMLV ({formatCOP(SMMLV * 2)}).
               </span>
             </div>
           </div>

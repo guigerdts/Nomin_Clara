@@ -13,9 +13,9 @@ import type { PayrollInput } from '../types';
 
 describe('getOrdinaryHourValue', () => {
   it('calculates hourly value from monthly salary', () => {
-    // SMMLV / 30 / 7 = 1423500 / 30 / 7 = 6778.57...
+    // SMMLV / 30 / 7 = 1750905 / 30 / 7 = 8337.64...
     const result = getOrdinaryHourValue(SMMLV);
-    expect(result).toBeCloseTo(6778.5714, 1);
+    expect(result).toBeCloseTo(8337.6429, 1);
   });
 
   it('returns 0 for zero salary', () => {
@@ -102,7 +102,7 @@ describe('formatPercent', () => {
 
   it('prevents holiday day OT from displaying as 114.99999999999999%', () => {
     const result = calculateBreakdown({
-      salary: 1423500,
+      salary: SMMLV,
       dayOT: 0, nightOT: 0,
       holidayDayOT: 5, holidayNightOT: 0,
       nightSurcharge: 0, holidaySurcharge: 0, holidayNightSurcharge: 0,
