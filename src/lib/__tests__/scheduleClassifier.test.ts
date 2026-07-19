@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { scheduleClassifier } from '../scheduleClassifier';
+import { calculateBreakdown } from '../rates';
 import type { ScheduleClassifierInput, ScheduleProfile, WorkedDay } from '../types';
 
 const baseProfile: ScheduleProfile = {
@@ -45,6 +46,42 @@ describe('scheduleClassifier', () => {
     expect(result.nightOT).toBe(0);
     expect(result.nightSurcharge).toBe(0);
     expect(result.holidayNightSurcharge).toBe(0);
+  });
+
+  it('non-work day + holiday — ALL hours are holidayDayOT (caso de referencia validado manualmente)', () => {
+    // Profile: Mon-Fri BUT this test uses a profile where Monday is excluded.
+    // July 13 2026 (Mon) = holiday (Ley 2578/2026) + day-of-rest per profile.
+    // Worked 07:00-17:00+60min → 9h, all day (07:00-17:00 < 19:00 → 0 night).
+    // Since Monday is NOT in workDays → adjExp=0 → ALL 9h = holidayDayOT.
+    const profileExcludeMon: ScheduleProfile = {
+      workDays: ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+      entryTime: '08:00', exitTime: '18:00', lunchBreakMinutes: 60,
+    };
+    const result = scheduleClassifier({
+      profile: profileExcludeMon,
+      workedDays: [
+        { date: '2026-07-13', entryTime: '07:00', exitTime: '17:00', lunchBreakMinutes: 60 },
+      ],
+      salary: 2_080_000, // $1.040.000/quincena × 2
+    });
+    // Day hours only (07:00-17:00), all beyond 0 expected → holidayDayOT
+    expect(result.holidaySurcharge).toBe(0);
+    expect(result.holidayDayOT).toBe(9);
+    expect(result.holidayNightOT).toBe(0);
+    expect(result.holidayNightSurcharge).toBe(0);
+    expect(result.dayOT).toBe(0);
+    expect(result.nightOT).toBe(0);
+    expect(result.nightSurcharge).toBe(0);
+
+    // Sanity check: feed into calculateBreakdown and verify monetary result
+    // hourValue = (2_080_000 / 30) / 7 ≈ 9,904.7619
+    // holidayDayOT subtotal = 9h × 9,904.7619 × 2.15 ≈ 191,657.14
+    const breakdown = calculateBreakdown(result);
+    const holidayDayOTEntry = breakdown.entries.find(e => e.label === 'Hora extra diurna dom/fest');
+    expect(holidayDayOTEntry).toBeDefined();
+    expect(holidayDayOTEntry!.hours).toBe(9);
+    expect(holidayDayOTEntry!.multiplier).toBe(2.15);
+    expect(holidayDayOTEntry!.subtotal).toBeCloseTo(191_657.14, 0);
   });
 
   it('partial hour — 30-min entry correctly classified', () => {

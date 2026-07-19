@@ -1,11 +1,16 @@
-import type { PayrollInput, ScheduleClassifierInput, WorkedDay } from './types';
+import type { DayOfWeek, PayrollInput, ScheduleClassifierInput, WorkedDay } from './types';
 import { isHoliday } from './holidays';
 
 const DAY_START = 6 * 60, DAY_END = 19 * 60, HALF_HOUR = 30, HH = 0.5;
+const DOW: Record<number, DayOfWeek> = { 0: 'sunday', 1: 'monday', 2: 'tuesday', 3: 'wednesday', 4: 'thursday', 5: 'friday', 6: 'saturday' };
 
 function toMin(t: string): number {
   const [h, m] = t.split(':').map(Number);
   return h * 60 + m;
+}
+
+function dayOfWeek(date: string): DayOfWeek {
+  return DOW[new Date(date + 'T12:00:00').getDay()];
 }
 
 function splitBlocks(entry: number, exit: number): { day: number; night: number } {
@@ -20,15 +25,16 @@ function splitBlocks(entry: number, exit: number): { day: number; night: number 
 
 function t2(v: number): number { return Math.floor(v * 100) / 100; }
 
-function classifyDay(d: WorkedDay, exp: number) {
+function classifyDay(d: WorkedDay, exp: number, isWorkDay: boolean) {
   if (d.entryTime === null) return { dayOT: 0, nightOT: 0, nightSurcharge: 0, holidaySurcharge: 0, holidayDayOT: 0, holidayNightSurcharge: 0, holidayNightOT: 0 };
+  const adjExp = isWorkDay ? exp : 0;
 
   const dayB = Math.max(0, splitBlocks(toMin(d.entryTime), toMin(d.exitTime!)).day - ((d.lunchBreakMinutes ?? 0) / HALF_HOUR));
   const nightB = splitBlocks(toMin(d.entryTime), toMin(d.exitTime!)).night;
   const dayH = dayB * HH, nightH = nightB * HH;
 
-  const withinDay = Math.min(dayH, exp);
-  const withinNight = Math.max(0, Math.min(nightH, exp - withinDay));
+  const withinDay = Math.min(dayH, adjExp);
+  const withinNight = Math.max(0, Math.min(nightH, adjExp - withinDay));
   const dayOT = Math.max(0, dayH - withinDay);
   const nightOT = Math.max(0, nightH - withinNight);
 
@@ -43,8 +49,9 @@ export function scheduleClassifier(input: ScheduleClassifierInput): PayrollInput
   const exp = (toMin(profile.exitTime) - toMin(profile.entryTime)) / 60 - profile.lunchBreakMinutes / 60;
   const acc = { dayOT: 0, nightOT: 0, nightSurcharge: 0, holidaySurcharge: 0, holidayDayOT: 0, holidayNightSurcharge: 0, holidayNightOT: 0 };
 
+  const wdSet = new Set(profile.workDays);
   for (const d of workedDays) {
-    const r = classifyDay(d, exp);
+    const r = classifyDay(d, exp, wdSet.has(dayOfWeek(d.date)));
     for (const k of Object.keys(acc) as (keyof typeof acc)[]) acc[k] += r[k];
   }
 
