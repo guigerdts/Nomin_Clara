@@ -58,4 +58,11 @@ Chain strategy: stacked-to-main
 - [ ] T3.2 Add `inputMode`, `scheduleProfile`, `workedDays` state + `useMemo` classifier bridge to `CalculatorPage.tsx` — clear opposite form on mode switch
 - [ ] T3.3 Add `mode?`, `scheduleProfile?`, `workedDays?` to `SavedRecord` in `src/lib/types.ts`
 - [ ] T3.4 Pass schedule fields to `saveRecord()` in `CalculatorPage.tsx` when mode is `'schedule'`
-- [ ] T3.5 Write integration tests — mode toggle clears fields, save+load schedule record, legacy records load without error
+- [ ] T3.5 Write integration tests:
+  - mode toggle clears opposite form's fields (manual↔schedule)
+  - save+load schedule record with deductions: guardar en modo schedule con
+    deductionsInput y splitMode configurados, recargar, y verificar que
+    splitMode y deductionsInput sobreviven el ciclo completo (mismo shape
+    que en modo manual — ambos modos alimentan el mismo calculateBreakdown()
+    y persisten el mismo SavedRecord)
+  - legacy records (manual mode, pre-schedule) load without error
