@@ -129,6 +129,8 @@ export function CalculatorPage() {
       totalActual: actualPay > 0 ? actualPay : null,
       totalOT: breakdown.totalOT,
       difference: actualPay > 0 ? actualPay - breakdown.grandTotal : null,
+      deductionsInput,
+      splitMode,
     };
 
     try {
@@ -139,7 +141,7 @@ export function CalculatorPage() {
       const msg = err instanceof Error ? err.message : 'Error desconocido';
       showToast(`Error al guardar: ${msg}`, 'error');
     }
-  }, [inputs, alias, actualPay]);
+  }, [inputs, alias, actualPay, deductionsInput, splitMode]);
 
   const handleExport = useCallback(() => {
     try {

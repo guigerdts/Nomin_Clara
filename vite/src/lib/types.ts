@@ -71,6 +71,8 @@ export interface SavedRecord {
   totalActual: number | null;
   totalOT: number;
   difference: number | null;
+  deductionsInput?: DeductionsInput;
+  splitMode?: DeductionSplitMode;
 }
 
 export type DeductionSplitMode = 'even' | 'second-fortnight' | 'first-fortnight';

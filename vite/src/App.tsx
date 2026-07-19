@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { ToastContainer } from './components/Toast';
 import { CalculatorPage } from './pages/CalculatorPage/CalculatorPage';
+import { ComparePage } from './pages/ComparePage/ComparePage';
 
 function App() {
   return (
@@ -11,15 +12,7 @@ function App() {
       <main className="container">
         <Routes>
           <Route path="/" element={<CalculatorPage />} />
-          <Route
-            path="/compare"
-            element={
-              <div className="page-header">
-                <h1>Comparar Registros</h1>
-                <p className="subtitle">Próximamente en PR3.</p>
-              </div>
-            }
-          />
+          <Route path="/compare" element={<ComparePage />} />
         </Routes>
       </main>
       <Footer />
@@ -28,4 +21,4 @@ function App() {
   );
 }
 
-export default App;
+export { App };

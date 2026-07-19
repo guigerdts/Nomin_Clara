@@ -235,3 +235,57 @@ describe('CalculatorPage — deductions module', () => {
     });
   });
 });
+
+describe('CalculatorPage — saveRecord with deductions', () => {
+  it('saves record with deductionsInput and splitMode', async () => {
+    renderPage();
+
+    const salaryInput = screen.getByLabelText(/salario mensual base/i);
+    fireEvent.change(salaryInput, { target: { value: '2600000' } });
+
+    await waitFor(() => {
+      expect(screen.getByText(/desglose de pago/i)).toBeInTheDocument();
+    });
+
+    const saveButton = screen.getByRole('button', { name: /guardar registro/i });
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      const records = JSON.parse(localStorage.getItem('nomina-clara-records') || '[]');
+      expect(records.length).toBe(1);
+      const saved = records[0];
+      expect(saved.deductionsInput).toBeDefined();
+      expect(saved.deductionsInput.includeHealthPension).toBe(true);
+      expect(saved.splitMode).toBeDefined();
+      expect(saved.splitMode).toBe('even');
+    });
+  });
+
+  it('loads legacy records without deductionsInput without error', async () => {
+    const legacyRecord = {
+      id: 'legacy-1',
+      createdAt: new Date().toISOString(),
+      alias: 'Legacy User',
+      quincena: '2026-01-01',
+      salary: 1300000,
+      transportAllowance: 200000,
+      inputs: { salary: 1300000, dayOT: 0, nightOT: 0, holidayDayOT: 0, holidayNightOT: 0, nightSurcharge: 0, holidaySurcharge: 0, holidayNightSurcharge: 0 },
+      breakdown: [],
+      totalCalculated: 865476,
+      totalActual: null,
+      totalOT: 0,
+      difference: null,
+    };
+    localStorage.setItem('nomina-clara-records', JSON.stringify([legacyRecord]));
+
+    cleanup();
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText(/legacy user/i)).toBeInTheDocument();
+    });
+
+    // Verify no crashes — the record renders in history
+    expect(screen.getByText(/\$865\.476/)).toBeInTheDocument();
+  });
+});
