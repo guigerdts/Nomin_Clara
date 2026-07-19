@@ -3,6 +3,7 @@ import {
   calculateBreakdown,
   validateOTLimits,
   formatCOP,
+  formatPercent,
   getOrdinaryHourValue,
   getTransportAllowance,
   SMMLV,
@@ -66,6 +67,50 @@ describe('formatCOP', () => {
 
   it('formats large COP values', () => {
     expect(formatCOP(10000000)).toBe('$10.000.000');
+  });
+});
+
+describe('formatPercent', () => {
+  it('rounds 1.15 × 100 from 114.99999999999999 to "115"', () => {
+    // 1.15 is stored as the nearest double ≈ 1.1499999999999999
+    // Multiplying by 100 gives 114.99999999999999
+    const raw = RATES.SURCHARGES.HOLIDAY_OT_DAY * 100;
+    expect(raw).not.toBe(115); // proves IEEE 754 imprecision
+    expect(formatPercent(raw)).toBe('115');
+  });
+
+  it('rounds 1.65 × 100 (= 165) without artifacts', () => {
+    const raw = RATES.SURCHARGES.HOLIDAY_OT_NIGHT * 100;
+    expect(formatPercent(raw)).toBe('165');
+  });
+
+  it('formats an already-clean integer as-is', () => {
+    expect(formatPercent(35)).toBe('35');
+  });
+
+  it('rounds down correctly', () => {
+    expect(formatPercent(34.499)).toBe('34');
+  });
+
+  it('rounds up correctly', () => {
+    expect(formatPercent(34.501)).toBe('35');
+  });
+
+  it('handles zero', () => {
+    expect(formatPercent(0)).toBe('0');
+  });
+
+  it('prevents holiday day OT from displaying as 114.99999999999999%', () => {
+    const result = calculateBreakdown({
+      salary: 1423500,
+      dayOT: 0, nightOT: 0,
+      holidayDayOT: 5, holidayNightOT: 0,
+      nightSurcharge: 0, holidaySurcharge: 0, holidayNightSurcharge: 0,
+    });
+    const entry = result.entries.find(e => e.label === 'Hora extra diurna dom/fest');
+    expect(entry).toBeDefined();
+    expect(entry!.surchargePct).not.toBe(115); // raw value is still IEEE 754
+    expect(formatPercent(entry!.surchargePct)).toBe('115');
   });
 });
 

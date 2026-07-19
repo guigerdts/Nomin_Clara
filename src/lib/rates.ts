@@ -63,6 +63,23 @@ export function formatCOP(value: number): string {
 }
 
 /**
+ * Formats a percentage value for display, rounding to avoid floating-point artifacts.
+ * e.g. `114.99999999999999` → `"115"`  (instead of `"114.99999999999999"`)
+ *
+ * INTENDED USE: surcharge rates in BreakdownTable (all integer percentages:
+ * 25, 35, 75, 90, 115, 125, 165). **Safe because every surchargePct is an
+ * integer percentage** — the 0.25, 0.35, etc. in SURCHARGES constants multiply
+ * by 100 and round cleanly to whole numbers.
+ *
+ * DO NOT use this for rates with meaningful decimal places like the solidarity
+ * fund tiers (1.2%, 1.4%, etc.) — `Math.round` would discard the fractional
+ * part. Those already use `.toFixed(1)` directly.
+ */
+export function formatPercent(value: number): string {
+  return String(Math.round(value));
+}
+
+/**
  * Validates that overtime hours do not exceed legal limits.
  * Limits are informative (warning), not blocking.
  */

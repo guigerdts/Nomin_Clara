@@ -1,5 +1,5 @@
 import type { BreakdownResult } from '../../lib/types';
-import { formatCOP } from '../../lib/rates';
+import { formatCOP, formatPercent } from '../../lib/rates';
 
 interface BreakdownTableProps {
   result: BreakdownResult;
@@ -37,7 +37,7 @@ export function BreakdownTable({ result }: BreakdownTableProps) {
               </td>
               <td className="text-right">{entry.hours}</td>
               <td className="text-right monetary">{formatCOP(entry.hourValue)}</td>
-              <td className="text-right">+{entry.surchargePct}%</td>
+              <td className="text-right">+{formatPercent(entry.surchargePct)}%</td>
               <td className="text-right monetary">{formatCOP(entry.subtotal)}</td>
             </tr>
           ))}
