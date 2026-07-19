@@ -1,0 +1,19 @@
+.footer {
+  background: var(--navbar-bg);
+  border-top: 1px solid var(--navbar-border);
+  padding: var(--space-6) 0;
+  margin-top: auto;
+}
+
+.disclaimer {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+.version {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+}
