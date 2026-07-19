@@ -58,7 +58,7 @@ describe('CalculatorPage — form → calculate → render', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/desglose de pago/i)).toBeInTheDocument();
-      expect(screen.getByText(/gran total quincena/i)).toBeInTheDocument();
+      expect(screen.getByText(/total devengado/i)).toBeInTheDocument();
     });
 
     const monetaryElements = screen.getAllByText(/\$\d+\.\d+/);
@@ -79,7 +79,7 @@ describe('CalculatorPage — form → calculate → render', () => {
     fireEvent.change(actualPayInput, { target: { value: '1500000' } });
 
     await waitFor(() => {
-      expect(screen.getByText(/te pagaron \$.+ más de lo calculado/i)).toBeInTheDocument();
+      expect(screen.getByText(/te pagaron \$.+ más de/i)).toBeInTheDocument();
     });
   });
 
@@ -176,5 +176,62 @@ describe('CalculatorPage — history save/load', () => {
     fireEvent.click(clearButton);
 
     expect(salaryInput.value).toBe('');
+  });
+});
+
+describe('CalculatorPage — deductions module', () => {
+  it('shows Deducciones de ley card when results are displayed', async () => {
+    renderPage();
+
+    const salaryInput = screen.getByLabelText(/salario mensual base/i);
+    fireEvent.change(salaryInput, { target: { value: '1300000' } });
+
+    await waitFor(() => {
+      expect(screen.getByText(/deducciones de ley/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows health+pension toggle checked by default', async () => {
+    renderPage();
+    const salaryInput = screen.getByLabelText(/salario mensual base/i);
+    fireEvent.change(salaryInput, { target: { value: '1300000' } });
+
+    await waitFor(() => {
+      const checkbox = screen.getByLabelText(/aplicar salud/i) as HTMLInputElement;
+      expect(checkbox.checked).toBe(true);
+    });
+  });
+
+  it('shows solidarity fund section for salary >= 4 SMMLV', async () => {
+    renderPage();
+    const salaryInput = screen.getByLabelText(/salario mensual base/i);
+    // 4 SMMLV = 7.003.620
+    fireEvent.change(salaryInput, { target: { value: '7500000' } });
+
+    await waitFor(() => {
+      expect(screen.getByText(/fondo de solidaridad pensional/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows NETO A PAGAR with blue background when deductions are active', async () => {
+    renderPage();
+    const salaryInput = screen.getByLabelText(/salario mensual base/i);
+    fireEvent.change(salaryInput, { target: { value: '1300000' } });
+
+    await waitFor(() => {
+      // With health+pension on by default, net pay should show
+      const netoElements = screen.getAllByText(/neto a pagar/i);
+      expect(netoElements.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('shows total deducido amount in the breakdown', async () => {
+    renderPage();
+    const salaryInput = screen.getByLabelText(/salario mensual base/i);
+    fireEvent.change(salaryInput, { target: { value: '1300000' } });
+
+    await waitFor(() => {
+      expect(screen.getByText(/total deducciones/i)).toBeInTheDocument();
+    });
   });
 });

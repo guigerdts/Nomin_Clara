@@ -33,6 +33,31 @@ export interface BreakdownResult {
   totalSurchargeHours: number;
 }
 
+export interface DeductionsInput {
+  includeHealthPension: boolean;
+  includeRetefuente: boolean;
+  embargoAmount: number;
+  loanAmount: number;
+  otherDeductions: number;
+  otherDeductionsLabel: string;
+}
+
+export interface DeductionItem {
+  label: string;
+  amount: number;
+  legalRef?: string;
+}
+
+export interface DeductionsBreakdown {
+  healthPension: { applies: boolean; health: number; pension: number; total: number };
+  solidarityFund: { applies: boolean; percentage: number; amount: number; range: string };
+  retefuente: { applies: boolean; baseDepurada: number; amount: number; warningMessage: string };
+  otherDeductions: { embargo: number; loan: number; other: number; otherLabel: string; total: number };
+  items: DeductionItem[];
+  totalDeductions: number;
+  netPay: number;
+}
+
 export interface SavedRecord {
   id: string;
   createdAt: string;
@@ -47,5 +72,7 @@ export interface SavedRecord {
   totalOT: number;
   difference: number | null;
 }
+
+export type DeductionSplitMode = 'even' | 'second-fortnight' | 'first-fortnight';
 
 export type Theme = 'light' | 'dark';

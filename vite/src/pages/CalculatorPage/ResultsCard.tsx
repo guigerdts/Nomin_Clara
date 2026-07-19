@@ -1,16 +1,23 @@
-import type { BreakdownResult } from '../../lib/types';
+import type { BreakdownResult, DeductionsBreakdown, DeductionSplitMode } from '../../lib/types';
 import { formatCOP } from '../../lib/rates';
+import { calculateNetPay } from '../../lib/deductions';
 import { BreakdownTable } from './BreakdownTable';
 import { TotalsPanel } from './TotalsPanel';
 import { ActualPayComparison } from './ActualPayComparison';
 
 interface ResultsCardProps {
   result: BreakdownResult;
+  deductions: DeductionsBreakdown | null;
   actualPay: number;
   onActualPayChange: (value: number) => void;
+  splitMode: DeductionSplitMode;
 }
 
-export function ResultsCard({ result, actualPay, onActualPayChange }: ResultsCardProps) {
+export function ResultsCard({ result, deductions, actualPay, onActualPayChange, splitMode }: ResultsCardProps) {
+  const netCalc = deductions ? calculateNetPay(result.grandTotal, deductions, splitMode) : null;
+  const referenceTotal = deductions && netCalc ? netCalc.netPay : result.grandTotal;
+  const referenceLabel = deductions && netCalc ? 'Neto a pagar' : 'Total devengado';
+
   return (
     <div className="card" id="results-card">
       <h2>Desglose de pago</h2>
@@ -25,9 +32,10 @@ export function ResultsCard({ result, actualPay, onActualPayChange }: ResultsCar
       </div>
 
       <BreakdownTable result={result} />
-      <TotalsPanel result={result} />
+      <TotalsPanel result={result} deductions={deductions} splitMode={splitMode} />
       <ActualPayComparison
-        grandTotal={result.grandTotal}
+        referenceTotal={referenceTotal}
+        referenceLabel={referenceLabel}
         actualPay={actualPay}
         onActualPayChange={onActualPayChange}
       />

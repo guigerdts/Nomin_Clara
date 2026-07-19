@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect } from 'react';
-import type { PayrollInput, BreakdownResult, SavedRecord } from '../../lib/types';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import type { PayrollInput, BreakdownResult, SavedRecord, DeductionsInput, DeductionsBreakdown, DeductionSplitMode } from '../../lib/types';
 import { calculateBreakdown, validateOTLimits } from '../../lib/rates';
+import { computeDeductions } from '../../lib/deductions';
 import { getAllRecords, saveRecord, deleteRecord, exportAllData } from '../../lib/storage';
 import { downloadBlob, today } from '../../lib/importExport';
 import { showToast } from '../../components/Toast';
@@ -8,6 +9,7 @@ import { PayrollForm } from './PayrollForm';
 import { ResultsCard } from './ResultsCard';
 import { HistorySection } from './HistorySection';
 import { ActionButtons } from './ActionButtons';
+import { DeduccionesForm } from './DeduccionesForm';
 
 const EMPTY_INPUTS: PayrollInput = {
   salary: 0,
@@ -20,6 +22,15 @@ const EMPTY_INPUTS: PayrollInput = {
   holidayNightSurcharge: 0,
 };
 
+const EMPTY_DEDUCTIONS: DeductionsInput = {
+  includeHealthPension: true,
+  includeRetefuente: false,
+  embargoAmount: 0,
+  loanAmount: 0,
+  otherDeductions: 0,
+  otherDeductionsLabel: '',
+};
+
 export function CalculatorPage() {
   const [inputs, setInputs] = useState<PayrollInput>({ ...EMPTY_INPUTS });
   const [alias, setAlias] = useState('');
@@ -28,6 +39,20 @@ export function CalculatorPage() {
   const [records, setRecords] = useState<SavedRecord[]>(() => getAllRecords());
   const [warnings, setWarnings] = useState<string[]>([]);
   const [salaryError, setSalaryError] = useState('');
+  const [deductionsInput, setDeductionsInput] = useState<DeductionsInput>({ ...EMPTY_DEDUCTIONS });
+  const [splitMode, setSplitMode] = useState<DeductionSplitMode>(() => {
+    const stored = localStorage.getItem('deduction-split-mode');
+    if (stored === 'even' || stored === 'second-fortnight' || stored === 'first-fortnight') {
+      return stored;
+    }
+    return 'even';
+  });
+
+  // Compute deductions breakdown whenever salary or input changes
+  const deductions = useMemo<DeductionsBreakdown | null>(() => {
+    if (!result || result.salary <= 0) return null;
+    return computeDeductions(result.salary, deductionsInput);
+  }, [result, deductionsInput]);
 
   const handleNumberChange = useCallback((field: keyof PayrollInput, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));
@@ -51,6 +76,11 @@ export function CalculatorPage() {
     );
     setWarnings(otResult.warnings);
   }, [inputs, alias]);
+
+  // Persist splitMode to localStorage on change
+  useEffect(() => {
+    localStorage.setItem('deduction-split-mode', splitMode);
+  }, [splitMode]);
 
   // Recalculate on any numeric input change
   useEffect(() => {
@@ -170,11 +200,23 @@ export function CalculatorPage() {
         {result && (
           <ResultsCard
             result={result}
+            deductions={deductions}
             actualPay={actualPay}
             onActualPayChange={setActualPay}
+            splitMode={splitMode}
           />
         )}
       </div>
+
+      {result && (
+        <DeduccionesForm
+          salary={result.salary}
+          values={deductionsInput}
+          onChange={setDeductionsInput}
+          splitMode={splitMode}
+          onSplitModeChange={setSplitMode}
+        />
+      )}
 
       {result && (
         <ActionButtons

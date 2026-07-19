@@ -1,30 +1,32 @@
 import { formatCOP } from '../../lib/rates';
 
 interface ActualPayComparisonProps {
-  grandTotal: number;
+  /** Valor de referencia: grandTotal (sin deducciones) o netPay (con deducciones) */
+  referenceTotal: number;
+  referenceLabel: string;
   actualPay: number;
   onActualPayChange: (value: number) => void;
 }
 
-export function ActualPayComparison({ grandTotal, actualPay, onActualPayChange }: ActualPayComparisonProps) {
+export function ActualPayComparison({ referenceTotal, referenceLabel, actualPay, onActualPayChange }: ActualPayComparisonProps) {
   const showDiff = actualPay > 0;
   let diff: number | null = null;
   let diffClass = '';
   let diffText = '';
 
   if (showDiff) {
-    diff = actualPay - grandTotal;
+    diff = actualPay - referenceTotal;
 
     if (diff >= 0) {
       diffClass = 'alert alert-success';
       if (diff === 0) {
-        diffText = 'Coincide exactamente con lo calculado.';
+        diffText = `Coincide exactamente con ${referenceLabel.toLowerCase()}.`;
       } else {
-        diffText = `Te pagaron ${formatCOP(Math.abs(diff))} más de lo calculado. ¡Vas al día!`;
+        diffText = `Te pagaron ${formatCOP(Math.abs(diff))} más de ${referenceLabel.toLowerCase()}. ¡Vas al día!`;
       }
     } else {
       diffClass = 'alert alert-danger';
-      diffText = `Te deben ${formatCOP(Math.abs(diff))}. Tu empleador no te está pagando correctamente.`;
+      diffText = `Te deben ${formatCOP(Math.abs(diff))} vs ${referenceLabel.toLowerCase()}. Tu empleador no te está pagando correctamente.`;
     }
   }
 
