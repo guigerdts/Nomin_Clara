@@ -139,10 +139,10 @@ describe('CalculatorPage — history save/load', () => {
       alias: 'Test User',
       quincena: '2026-07-01',
       salary: 1300000,
-      transportAllowance: 200000,
+      transportAllowance: 249095,
       inputs: { salary: 1300000, dayOT: 2, nightOT: 0, holidayDayOT: 0, holidayNightOT: 0, nightSurcharge: 0, holidaySurcharge: 0, holidayNightSurcharge: 0 },
       breakdown: [],
-      totalCalculated: 865476,
+      totalCalculated: 914571,
       totalActual: null,
       totalOT: 2,
       difference: null,
@@ -268,10 +268,10 @@ describe('CalculatorPage — saveRecord with deductions', () => {
       alias: 'Legacy User',
       quincena: '2026-01-01',
       salary: 1300000,
-      transportAllowance: 200000,
+      transportAllowance: 249095,
       inputs: { salary: 1300000, dayOT: 0, nightOT: 0, holidayDayOT: 0, holidayNightOT: 0, nightSurcharge: 0, holidaySurcharge: 0, holidayNightSurcharge: 0 },
       breakdown: [],
-      totalCalculated: 865476,
+      totalCalculated: 899095,
       totalActual: null,
       totalOT: 0,
       difference: null,
@@ -286,6 +286,6 @@ describe('CalculatorPage — saveRecord with deductions', () => {
     });
 
     // Verify no crashes — the record renders in history
-    expect(screen.getByText(/\$865\.476/)).toBeInTheDocument();
+    expect(screen.getByText(/\$899\.095/)).toBeInTheDocument();
   });
 });

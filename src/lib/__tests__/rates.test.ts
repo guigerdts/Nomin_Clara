@@ -7,6 +7,7 @@ import {
   getOrdinaryHourValue,
   getTransportAllowance,
   SMMLV,
+  TRANSPORT_ALLOWANCE_2026,
   RATES,
 } from '../rates';
 import type { PayrollInput } from '../types';
@@ -29,8 +30,8 @@ describe('getOrdinaryHourValue', () => {
 
 describe('getTransportAllowance', () => {
   it('returns allowance for salary ≤ 2 SMMLV', () => {
-    expect(getTransportAllowance(SMMLV)).toBe(RATES.TRANSPORT_ALLOWANCE_VALUE);
-    expect(getTransportAllowance(SMMLV * 2)).toBe(RATES.TRANSPORT_ALLOWANCE_VALUE);
+    expect(getTransportAllowance(SMMLV)).toBe(TRANSPORT_ALLOWANCE_2026);
+    expect(getTransportAllowance(SMMLV * 2)).toBe(TRANSPORT_ALLOWANCE_2026);
   });
 
   it('returns 0 for salary > 2 SMMLV', () => {
@@ -166,9 +167,9 @@ describe('calculateBreakdown', () => {
   it('returns base pay only when no extra hours', () => {
     const result = calculateBreakdown(baseInput);
     expect(result.basePay).toBeCloseTo(SMMLV / 2, 0);
-    expect(result.transport).toBe(RATES.TRANSPORT_ALLOWANCE_VALUE);
+    expect(result.transport).toBe(TRANSPORT_ALLOWANCE_2026);
     expect(result.extraTotal).toBe(0);
-    expect(result.grandTotal).toBeCloseTo(SMMLV / 2 + RATES.TRANSPORT_ALLOWANCE_VALUE, 0);
+    expect(result.grandTotal).toBeCloseTo(SMMLV / 2 + TRANSPORT_ALLOWANCE_2026, 0);
     expect(result.entries).toHaveLength(0);
   });
 

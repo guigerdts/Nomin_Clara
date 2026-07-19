@@ -1,7 +1,7 @@
 import type { PayrollInput, BreakdownEntry, BreakdownResult } from './types';
-import { SMMLV } from './constants';
+import { SMMLV, TRANSPORT_ALLOWANCE_2026 } from './constants';
 
-export { SMMLV };
+export { SMMLV, TRANSPORT_ALLOWANCE_2026 };
 
 export const RATES = {
   WEEKLY_HOURS: 42,
@@ -31,7 +31,6 @@ export const RATES = {
     MAX_OT_PER_WEEK: 12,
   },
   TRANSPORT_ALLOWANCE_MULTIPLIER: 2,
-  TRANSPORT_ALLOWANCE_VALUE: 200000,
 } as const;
 
 /**
@@ -51,7 +50,7 @@ export function getOrdinaryHourValue(monthlySalary: number): number {
 export function getTransportAllowance(monthlySalary: number): number {
   if (!monthlySalary || monthlySalary <= 0) return 0;
   const threshold = SMMLV * RATES.TRANSPORT_ALLOWANCE_MULTIPLIER;
-  return monthlySalary <= threshold ? RATES.TRANSPORT_ALLOWANCE_VALUE : 0;
+  return monthlySalary <= threshold ? TRANSPORT_ALLOWANCE_2026 : 0;
 }
 
 /**

@@ -18,6 +18,16 @@
  * Source: Res. DIAN 000238/2025
  *
  * Used for: retefuente brackets (UVT-based).
+ *
+ * ===== Auxilio de Transporte =====
+ * 2026: $249.095
+ * Source: Decreto 1470/2025 (mismo decreto que fijó el SMMLV 2026)
+ *
+ * Aplica a salarios ≤ 2 SMMLV. Se paga por cada mes trabajado (el
+ * cálculo quincenal lo divide entre 2).
+ *
+ * ⚠️ UPDATE together with SMMLV at the start of each year.
  */
 export const SMMLV = 1_750_905;
 export const UVT_2026 = 52_374;
+export const TRANSPORT_ALLOWANCE_2026 = 249_095;
