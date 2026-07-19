@@ -23,6 +23,35 @@ describe('CalculatorPage — form → calculate → render', () => {
     expect(screen.getByPlaceholderText(/2600000/i)).toBeInTheDocument();
   });
 
+  it('toggles mode tabs and renders schedule/manual forms', async () => {
+    renderPage();
+
+    // Default: manual mode shows the 7-field grid
+    expect(screen.getByText(/horas extra diurnas/i)).toBeInTheDocument();
+
+    // Switch to schedule mode
+    const scheduleTab = screen.getByRole('button', { name: /horario detallado/i });
+    fireEvent.click(scheduleTab);
+
+    await waitFor(() => {
+      expect(screen.getByText(/perfil semanal/i)).toBeInTheDocument();
+    });
+
+    // Manual fields should not be visible
+    expect(screen.queryByText(/horas extra diurnas/i)).not.toBeInTheDocument();
+
+    // Switch back to manual
+    const manualTab = screen.getByRole('button', { name: /^manual$/i });
+    fireEvent.click(manualTab);
+
+    await waitFor(() => {
+      expect(screen.getByText(/horas extra diurnas/i)).toBeInTheDocument();
+    });
+
+    // Schedule fields should not be visible
+    expect(screen.queryByText(/perfil semanal/i)).not.toBeInTheDocument();
+  });
+
   it('renders all 7 concept inputs', () => {
     renderPage();
     expect(screen.getByLabelText(/horas extra diurnas/i)).toBeInTheDocument();
@@ -236,7 +265,7 @@ describe('CalculatorPage — deductions module', () => {
   });
 });
 
-describe('CalculatorPage — saveRecord with deductions', () => {
+describe('CalculatorPage — saveRecord with deductions and schedule mode', () => {
   it('saves record with deductionsInput and splitMode', async () => {
     renderPage();
 
@@ -258,6 +287,75 @@ describe('CalculatorPage — saveRecord with deductions', () => {
       expect(saved.deductionsInput.includeHealthPension).toBe(true);
       expect(saved.splitMode).toBeDefined();
       expect(saved.splitMode).toBe('even');
+    });
+  });
+
+  it('saves record with schedule mode, deductions, and schedule fields', async () => {
+    renderPage();
+
+    // Enter salary to enable calculation
+    const salaryInput = screen.getByLabelText(/salario mensual base/i);
+    fireEvent.change(salaryInput, { target: { value: '2600000' } });
+
+    // Wait for initial manual calculation
+    await waitFor(() => {
+      expect(screen.getByText(/desglose de pago/i)).toBeInTheDocument();
+    });
+
+    // Switch to schedule mode
+    const scheduleTab = screen.getByRole('button', { name: /horario detallado/i });
+    fireEvent.click(scheduleTab);
+
+    await waitFor(() => {
+      expect(screen.getByText(/perfil semanal/i)).toBeInTheDocument();
+    });
+
+    // Trigger scheduleProfile change by toggling "Sáb" day checkbox
+    // (this makes onScheduleProfileChange fire, setting scheduleProfile state)
+    const satCheckbox = screen.getByLabelText('Sáb');
+    fireEvent.click(satCheckbox);
+
+    // Now DayEntryForm should render with the date input
+    await waitFor(() => {
+      expect(screen.getByLabelText(/fecha del día/i)).toBeInTheDocument();
+    });
+
+    // Add a work day
+    const dateInput = screen.getByLabelText(/fecha del día/i);
+    fireEvent.change(dateInput, { target: { value: '2026-07-13' } });
+
+    const addDayButton = screen.getByRole('button', { name: /agregar día/i });
+    fireEvent.click(addDayButton);
+
+    // Wait for classification to trigger calculation
+    await waitFor(() => {
+      expect(screen.getByText(/desglose de pago/i)).toBeInTheDocument();
+    });
+
+    // Configure deductions: health+pension is on by default, splitMode is 'even'
+    const healthCheckbox = screen.getByLabelText(/aplicar salud/i) as HTMLInputElement;
+    expect(healthCheckbox.checked).toBe(true);
+
+    // Save the record
+    const saveButton = screen.getByRole('button', { name: /guardar registro/i });
+    fireEvent.click(saveButton);
+
+    // Verify saved record has all fields
+    await waitFor(() => {
+      const records = JSON.parse(localStorage.getItem('nomina-clara-records') || '[]');
+      expect(records.length).toBe(1);
+      const saved = records[0];
+      expect(saved.deductionsInput).toBeDefined();
+      expect(saved.deductionsInput.includeHealthPension).toBe(true);
+      expect(saved.splitMode).toBe('even');
+      expect(saved.mode).toBe('schedule');
+      expect(saved.scheduleProfile).toBeDefined();
+      expect(saved.scheduleProfile.workDays).toContain('monday');
+      expect(saved.workedDays).toBeDefined();
+      expect(saved.workedDays.length).toBe(1);
+      expect(saved.workedDays[0].date).toBe('2026-07-13');
+      expect(saved.inputs).toBeDefined();
+      expect(saved.inputs.salary).toBe(2600000);
     });
   });
 
@@ -287,5 +385,36 @@ describe('CalculatorPage — saveRecord with deductions', () => {
 
     // Verify no crashes — the record renders in history
     expect(screen.getByText(/\$899\.095/)).toBeInTheDocument();
+  });
+
+  it('loads legacy records without schedule fields without error', async () => {
+    // A record with deductionsInput and splitMode but no mode/scheduleProfile/workedDays
+    const legacyRecord = {
+      id: 'legacy-2',
+      createdAt: new Date().toISOString(),
+      alias: 'Pre-Schedule User',
+      quincena: '2026-06-01',
+      salary: 2000000,
+      transportAllowance: 249095,
+      inputs: { salary: 2000000, dayOT: 0, nightOT: 0, holidayDayOT: 0, holidayNightOT: 0, nightSurcharge: 0, holidaySurcharge: 0, holidayNightSurcharge: 0 },
+      breakdown: [],
+      totalCalculated: 1574760,
+      totalActual: null,
+      totalOT: 0,
+      difference: null,
+      deductionsInput: { includeHealthPension: true, includeRetefuente: false, embargoAmount: 0, loanAmount: 0, otherDeductions: 0, otherDeductionsLabel: '' },
+      splitMode: 'even',
+    };
+    localStorage.setItem('nomina-clara-records', JSON.stringify([legacyRecord]));
+
+    cleanup();
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText(/pre-schedule user/i)).toBeInTheDocument();
+    });
+
+    // Verify no crashes and the record renders
+    expect(screen.getByText(/\$1\.574\.760/)).toBeInTheDocument();
   });
 });

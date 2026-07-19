@@ -1,5 +1,8 @@
-import type { PayrollInput } from '../../lib/types';
+import type { PayrollInput, InputMode, ScheduleProfile, WorkedDay } from '../../lib/types';
 import { getTransportAllowance, formatCOP, SMMLV } from '../../lib/rates';
+import { ScheduleProfileForm } from './ScheduleProfileForm';
+import { DayEntryForm } from './DayEntryForm';
+import styles from './PayrollForm.module.css';
 
 interface PayrollFormProps {
   values: PayrollInput;
@@ -9,6 +12,12 @@ interface PayrollFormProps {
   onCalculate: () => void;
   warnings: string[];
   salaryError: string;
+  inputMode?: InputMode;
+  onInputModeChange?: (mode: InputMode) => void;
+  scheduleProfile?: ScheduleProfile | null;
+  onScheduleProfileChange?: (profile: ScheduleProfile) => void;
+  workedDays?: WorkedDay[];
+  onWorkedDaysChange?: (days: WorkedDay[]) => void;
 }
 
 const CONCEPT_FIELDS: {
@@ -69,6 +78,12 @@ export function PayrollForm({
   onCalculate,
   warnings,
   salaryError,
+  inputMode = 'manual',
+  onInputModeChange,
+  scheduleProfile,
+  onScheduleProfileChange,
+  workedDays,
+  onWorkedDaysChange,
 }: PayrollFormProps) {
   const transport = getTransportAllowance(values.salary);
 
@@ -80,6 +95,27 @@ export function PayrollForm({
   return (
     <div className="card">
       <h2>Tus datos</h2>
+
+      {/* Mode toggle */}
+      {onInputModeChange && (
+        <div className={styles.modeToggle}>
+          <button
+            type="button"
+            className={`${styles.modeBtn} ${inputMode === 'manual' ? styles.modeBtnActive : ''}`}
+            onClick={() => onInputModeChange('manual')}
+          >
+            Manual
+          </button>
+          <button
+            type="button"
+            className={`${styles.modeBtn} ${inputMode === 'schedule' ? styles.modeBtnActive : ''}`}
+            onClick={() => onInputModeChange('schedule')}
+          >
+            Horario Detallado
+          </button>
+        </div>
+      )}
+
       <form
         id="calc-form"
         noValidate
@@ -146,34 +182,54 @@ export function PayrollForm({
 
         <hr className="divider" />
 
-        <h3>Horas trabajadas en la quincena</h3>
-        <p className="field-hint">
-          Ingresá las cantidades de cada tipo de hora trabajada en los últimos 15 días.
-        </p>
+        {inputMode === 'manual' ? (
+          <>
+            <h3>Horas trabajadas en la quincena</h3>
+            <p className="field-hint">
+              Ingresá las cantidades de cada tipo de hora trabajada en los últimos 15 días.
+            </p>
 
-        <div className="hours-grid">
-          {CONCEPT_FIELDS.map(field => (
-            <div className="field-group" key={field.key}>
-              <label htmlFor={field.key}>
-                {field.label}
-                <Tooltip tip={field.tip} />
-              </label>
-              <input
-                type="number"
-                id={field.key}
-                name={field.key}
-                min={0}
-                step={0.5}
-                value={(values[field.key] as number) || ''}
-                placeholder="0"
-                onChange={e => handleNumberChange(field.key, e.target.value)}
-              />
+            <div className="hours-grid">
+              {CONCEPT_FIELDS.map(field => (
+                <div className="field-group" key={field.key}>
+                  <label htmlFor={field.key}>
+                    {field.label}
+                    <Tooltip tip={field.tip} />
+                  </label>
+                  <input
+                    type="number"
+                    id={field.key}
+                    name={field.key}
+                    min={0}
+                    step={0.5}
+                    value={(values[field.key] as number) || ''}
+                    placeholder="0"
+                    onChange={e => handleNumberChange(field.key, e.target.value)}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        ) : (
+          <>
+            {onScheduleProfileChange && (
+              <ScheduleProfileForm
+                profile={scheduleProfile ?? null}
+                onChange={onScheduleProfileChange}
+              />
+            )}
+            {scheduleProfile && onWorkedDaysChange && (
+              <DayEntryForm
+                days={workedDays ?? []}
+                profile={scheduleProfile}
+                onChange={onWorkedDaysChange}
+              />
+            )}
+          </>
+        )}
 
-        {/* OT Warnings */}
-        {warnings.length > 0 && (
+        {/* OT Warnings (manual mode only) */}
+        {inputMode === 'manual' && warnings.length > 0 && (
           <div id="ot-warning" className="alert alert-warning">
             <strong>⚠️ Límites de horas extra</strong>
             <ul>
@@ -187,7 +243,7 @@ export function PayrollForm({
         {/* Actions */}
         <div className="form-actions">
           <button type="submit" className="btn btn-primary">
-            Calcular
+            {inputMode === 'schedule' ? 'Clasificar y Calcular' : 'Calcular'}
           </button>
         </div>
       </form>

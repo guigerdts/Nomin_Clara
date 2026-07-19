@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import type { PayrollInput, BreakdownResult, SavedRecord, DeductionsInput, DeductionsBreakdown, DeductionSplitMode } from '../../lib/types';
+import type { PayrollInput, BreakdownResult, SavedRecord, DeductionsInput, DeductionsBreakdown, DeductionSplitMode, InputMode, ScheduleProfile, WorkedDay } from '../../lib/types';
 import { calculateBreakdown, validateOTLimits } from '../../lib/rates';
 import { computeDeductions } from '../../lib/deductions';
+import { scheduleClassifier } from '../../lib/scheduleClassifier';
 import { getAllRecords, saveRecord, deleteRecord, exportAllData } from '../../lib/storage';
 import { downloadBlob, today } from '../../lib/importExport';
 import { showToast } from '../../components/Toast';
@@ -48,12 +49,23 @@ export function CalculatorPage() {
     }
     return 'even';
   });
+  const [inputMode, setInputMode] = useState<InputMode>('manual');
+  const [scheduleProfile, setScheduleProfile] = useState<ScheduleProfile | null>(null);
+  const [workedDays, setWorkedDays] = useState<WorkedDay[]>([]);
 
   // Compute deductions breakdown whenever salary or input changes
   const deductions = useMemo<DeductionsBreakdown | null>(() => {
     if (!result || result.salary <= 0) return null;
     return computeDeductions(result.salary, deductionsInput);
   }, [result, deductionsInput]);
+
+  const salary = inputs.salary;
+
+  // Classify schedule input when in schedule mode
+  const classifiedInput = useMemo(() => {
+    if (inputMode !== 'schedule' || !scheduleProfile || workedDays.length === 0) return null;
+    return scheduleClassifier({ profile: scheduleProfile, workedDays, salary });
+  }, [inputMode, scheduleProfile, workedDays, salary]);
 
   const handleNumberChange = useCallback((field: keyof PayrollInput, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));
@@ -92,6 +104,29 @@ export function CalculatorPage() {
       setWarnings([]);
     }
   }, [inputs, calculate]);
+
+  // Auto-trigger: sync classified input to inputs in schedule mode
+  useEffect(() => {
+    if (inputMode === 'schedule') {
+      if (classifiedInput) {
+        setInputs(classifiedInput);
+      } else {
+        setResult(null);
+      }
+    }
+  }, [inputMode, classifiedInput]);
+
+  // Clear state on mode switch
+  const handleInputModeChange = useCallback((mode: InputMode) => {
+    setInputMode(mode);
+    setResult(null);
+    if (mode === 'manual') {
+      setScheduleProfile(null);
+      setWorkedDays([]);
+    } else {
+      setInputs(prev => ({ ...EMPTY_INPUTS, salary: prev.salary }));
+    }
+  }, []);
 
   const handleSave = useCallback(() => {
     if (inputs.salary <= 0) {
@@ -132,6 +167,11 @@ export function CalculatorPage() {
       difference: actualPay > 0 ? actualPay - breakdown.grandTotal : null,
       deductionsInput,
       splitMode,
+      mode: inputMode,
+      ...(inputMode === 'schedule' && {
+        scheduleProfile,
+        workedDays,
+      }),
     };
 
     try {
@@ -198,6 +238,12 @@ export function CalculatorPage() {
           onCalculate={calculate}
           warnings={warnings}
           salaryError={salaryError}
+          inputMode={inputMode}
+          onInputModeChange={handleInputModeChange}
+          scheduleProfile={scheduleProfile}
+          onScheduleProfileChange={setScheduleProfile}
+          workedDays={workedDays}
+          onWorkedDaysChange={setWorkedDays}
         />
 
         {result && (

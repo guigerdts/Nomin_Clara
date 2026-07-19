@@ -73,6 +73,9 @@ export interface SavedRecord {
   difference: number | null;
   deductionsInput?: DeductionsInput;
   splitMode?: DeductionSplitMode;
+  mode?: InputMode;
+  scheduleProfile?: ScheduleProfile;
+  workedDays?: WorkedDay[];
 }
 
 export type DeductionSplitMode = 'even' | 'second-fortnight' | 'first-fortnight';
