@@ -77,4 +77,27 @@ export interface SavedRecord {
 
 export type DeductionSplitMode = 'even' | 'second-fortnight' | 'first-fortnight';
 
+export type InputMode = 'manual' | 'schedule';
+export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+
+export interface ScheduleProfile {
+  workDays: DayOfWeek[];
+  entryTime: string;
+  exitTime: string;
+  lunchBreakMinutes: number;
+}
+
+export interface WorkedDay {
+  date: string;
+  entryTime: string | null;
+  exitTime: string | null;
+  lunchBreakMinutes: number | null;
+}
+
+export interface ScheduleClassifierInput {
+  profile: ScheduleProfile;
+  workedDays: WorkedDay[];
+  salary: number;
+}
+
 export type Theme = 'light' | 'dark';
