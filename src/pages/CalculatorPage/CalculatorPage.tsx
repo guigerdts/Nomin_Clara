@@ -168,10 +168,10 @@ export function CalculatorPage() {
       deductionsInput,
       splitMode,
       mode: inputMode,
-      ...(inputMode === 'schedule' && {
+      ...(inputMode === 'schedule' && scheduleProfile ? {
         scheduleProfile,
         workedDays,
-      }),
+      } : {}),
     };
 
     try {
