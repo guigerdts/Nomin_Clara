@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Nómina Clara — Styles
+   Nómina Clara — Global Styles
    ==========================================================================
    Diseño: SaaS dashboard, responsive, dark mode, print optimizado.
    Metodología: Custom properties + BEM-lite.
@@ -148,7 +148,7 @@ img, canvas {
 /* --------------------------------------------------------------------------
    4. LAYOUT
    -------------------------------------------------------------------------- */
-#app {
+#root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -767,7 +767,7 @@ input[type="number"]::-webkit-outer-spin-button {
     print-color-adjust: exact;
   }
 
-  #app {
+  #root {
     display: block;
   }
 

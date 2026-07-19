@@ -2,11 +2,11 @@
 schema: spec-driven
 
 context: |
-  Tech stack: Static web (HTML5 + CSS3 + JavaScript vanilla)
-  Architecture: Client-only SPA, no backend, no build tools
-  Testing: None detected (static web, no test runner available)
-  Style: CSS custom properties, responsive design, vanilla JS
-  Strict TDD: false (no test runner available)
+  Tech stack: React 18 + TypeScript (strict) + Vite 5 + Vitest 2
+  Architecture: SPA client-side, no backend, CSS Modules + global CSS custom properties
+  Testing: Vitest with jsdom, @testing-library/react, 4 test files (66 tests passing)
+  Style: CSS Modules per component, global.css for theme vars, responsive
+  Strict TDD: true (Vitest available and in active use)
 
 rules:
   proposal:
@@ -26,14 +26,15 @@ rules:
     - Order by dependency: legal rates first, then calculator, then comparison
   apply:
     guidelines:
-      - Use vanilla JS, no frameworks or libraries
-      - Keep legal rates in a separate, well-commented file
-      - Use CSS custom properties for theming
-    tdd: false
-    test_command: ""
+      - Use React + TypeScript strict for all new components
+      - Keep legal rates in a separate, well-commented file (lib/rates.ts)
+      - Use CSS Modules for component styles, global.css for theme vars
+      - Canvas charts via useRef/useEffect (no chart library dependency)
+    tdd: true
+    test_command: "npx vitest run"
   verify:
-    test_command: ""
-    build_command: ""
+    test_command: "npx vitest run"
+    build_command: "npx tsc --noEmit && npx vite build"
     coverage_threshold: 0
   archive:
     - Warn before merging destructive deltas

@@ -1,5 +1,5 @@
 PROVIDER="opencode"
-FILE_PATTERNS="*.html,*.css,*.js"
+FILE_PATTERNS="*.ts,*.tsx,*.css"
 EXCLUDE_PATTERNS="*.min.js,*.min.css"
 RULES_FILE="AGENTS.md"
 STRICT_MODE="true"

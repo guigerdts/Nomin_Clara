@@ -1,0 +1,23 @@
+.container {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: var(--space-6);
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.container:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.dragging {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.fileInput {
+  display: none;
+}

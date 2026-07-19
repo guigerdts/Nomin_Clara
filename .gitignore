@@ -1,3 +1,7 @@
 .atl/
 .codegraph/
 .gga
+
+# Vite build output
+dist/
+node_modules/

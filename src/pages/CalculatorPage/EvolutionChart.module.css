@@ -1,0 +1,6 @@
+.chartWrapper {
+  background: var(--color-surface-hover);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
