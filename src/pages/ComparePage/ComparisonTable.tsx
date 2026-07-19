@@ -1,4 +1,5 @@
 import { formatCOP } from '../../lib/rates';
+import type { DeductionSplitMode } from '../../lib/types';
 import styles from './ComparisonTable.module.css';
 
 interface TableRecord {
@@ -9,7 +10,14 @@ interface TableRecord {
   deducciones: number | null;
   neto: number | null;
   diferencia: number | null;
+  splitMode?: DeductionSplitMode;
 }
+
+const MODE_BADGES: Record<DeductionSplitMode, string> = {
+  even: '',
+  'second-fortnight': '2da quincena',
+  'first-fortnight': '1ra quincena',
+};
 
 type SortField = 'alias' | 'quincena' | 'devengado' | 'deducciones' | 'neto' | 'diferencia';
 type SortDir = 'asc' | 'desc';
@@ -71,6 +79,11 @@ export function ComparisonTable({ records, sortField, sortDir, onSort }: Compari
                 {record.deducciones !== null
                   ? formatCOP(record.deducciones)
                   : '—'}
+                {record.splitMode && record.splitMode !== 'even' && (
+                  <span className={styles.modeBadge} title={`Modo: ${MODE_BADGES[record.splitMode]}`}>
+                    {MODE_BADGES[record.splitMode]}
+                  </span>
+                )}
               </td>
               <td>
                 {record.neto !== null ? formatCOP(record.neto) : '—'}

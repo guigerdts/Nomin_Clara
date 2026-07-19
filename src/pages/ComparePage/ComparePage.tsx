@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { SavedRecord } from '../../lib/types';
+import type { SavedRecord, DeductionSplitMode } from '../../lib/types';
 import { getAllRecords } from '../../lib/storage';
 import { computeDeductions, calculateNetPay } from '../../lib/deductions';
 import { ImportSection } from './ImportSection';
@@ -15,6 +15,7 @@ export interface TableRecord {
   deducciones: number | null;
   neto: number | null;
   diferencia: number | null;
+  splitMode?: DeductionSplitMode;
 }
 
 export type SortField = 'alias' | 'quincena' | 'devengado' | 'deducciones' | 'neto' | 'diferencia';
@@ -53,6 +54,7 @@ export function ComparePage() {
       quincena: record.quincena,
       ...computed,
       diferencia: record.difference,
+      splitMode: record.splitMode ?? undefined,
     };
   });
 

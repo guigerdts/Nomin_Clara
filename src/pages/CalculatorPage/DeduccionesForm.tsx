@@ -41,7 +41,15 @@ export function DeduccionesForm({ salary, values, onChange, splitMode, onSplitMo
 
       {/* ── Quincena split mode ──────────────────────────── */}
       <div className={styles.splitModeSection}>
-        <h3 className={styles.splitModeTitle}>Distribución quincenal de descuentos</h3>
+        <h3 className={styles.splitModeTitle}>
+          Distribución quincenal de descuentos
+          <span className={styles.infoIcon} tabIndex={0} role="tooltip" aria-label="Más información">
+            <span className={styles.tooltipText}>
+              Si no sabés qué modo usa tu empresa, preguntale a nómina antes de comparar — el número
+              puede verse distinto solo por esto, sin que sea un error real de pago.
+            </span>
+          </span>
+        </h3>
         <p className={styles.hint}>
           Elegí cómo se distribuyen los descuentos entre la primera y segunda quincena del mes.
         </p>

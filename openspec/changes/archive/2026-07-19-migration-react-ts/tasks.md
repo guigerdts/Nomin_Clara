@@ -54,11 +54,11 @@ Chain strategy: stacked-to-main
 
 ## Phase 3: Compare Page & Cleanup (PR3)
 
-- [ ] 3.1 Create `ImportSection.tsx` — file input + JSON import with validation
-- [ ] 3.2 Create `ComparisonChart.tsx` — Canvas chart via `useRef`/`useEffect`
-- [ ] 3.3 Create `ComparisonTable.tsx` — sortable records table
-- [ ] 3.4 Create CSS Modules for compare components
-- [ ] 3.5 Add route `/compare` in `App.tsx`
-- [ ] 3.6 Write RTL integration tests: import mock data, toggle sort
-- [ ] 3.7 Delete old files: `js/`, `css/`, `index.html`, `comparar.html`
-- [ ] 3.8 Update `README.md` with new stack and build commands
+- [x] 3.1 Create `ImportSection.tsx` — file input + JSON import with validation
+- [x] 3.2 Create `ComparisonChart.tsx` — Canvas chart via `useRef`/`useEffect`
+- [x] 3.3 Create `ComparisonTable.tsx` — sortable records table
+- [x] 3.4 Create CSS Modules for compare components
+- [x] 3.5 Add route `/compare` in `App.tsx`
+- [x] 3.6 Write RTL integration tests: import mock data, toggle sort
+- [x] 3.7 Delete old files: `js/`, `css/`, `index.html`, `comparar.html`
+- [x] 3.8 Update `README.md` with new stack and build commands

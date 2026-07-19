@@ -25,21 +25,21 @@ Chain strategy: size-exception
 
 ## Phase 3: Move vite/ → raíz (secuencia exacta)
 
-- [ ] 3.1 — Borrar legacy: `rm index.html comparar.html js/ css/` (del repo, no staged aún)
-- [ ] 3.2 — Mover: `mv vite/src . && mv vite/index.html . && mv vite/public . 2>/dev/null`
-- [ ] 3.3 — `vite.config.ts`: eliminar `root: './vite'`, outDir → `'dist'`
-- [ ] 3.4 — `package.json`: verificar scripts post-move
-- [ ] 3.5 — `rmdir vite` si quedó vacío
+- [x] 3.1 — Borrar legacy: `rm index.html comparar.html js/ css/` (del repo, no staged aún)
+- [x] 3.2 — Mover: `mv vite/src . && mv vite/index.html . && mv vite/public . 2>/dev/null`
+- [x] 3.3 — `vite.config.ts`: eliminar `root: './vite'`, outDir → `'dist'`
+- [x] 3.4 — `package.json`: verificar scripts post-move
+- [x] 3.5 — `rmdir vite` si quedó vacío
 
 ## Phase 4: Verification + Deploy config
 
-- [ ] 4.1 — `tsc --noEmit` desde raíz
-- [ ] 4.2 — `vite build` desde raíz (verificar output en dist/)
-- [ ] 4.3 — `vitest run` completo
-- [ ] 4.4 — `vercel.json`: verificar build config post-move
-- [ ] 4.5 — `README.md`: instrucciones finales
+- [x] 4.1 — `tsc --noEmit` desde raíz
+- [x] 4.2 — `vite build` desde raíz (verificar output en dist/)
+- [x] 4.3 — `vitest run` completo
+- [x] 4.4 — `vercel.json`: verificar build config post-move
+- [x] 4.5 — `README.md`: instrucciones finales
 
 ## Phase 5: Tests legacy + Old file deletion commit
 
-- [ ] 5.1 — Verificar que los archivos legacy ya no existen en el working tree
-- [ ] 5.2 — Commit con todo: schema, compare, move, cleanup
+- [x] 5.1 — Verificar que los archivos legacy ya no existen en el working tree
+- [x] 5.2 — Commit con todo: schema, compare, move, cleanup

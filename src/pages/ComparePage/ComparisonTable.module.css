@@ -46,3 +46,17 @@
 .sortArrow {
   font-size: 10px;
 }
+
+.modeBadge {
+  display: inline-block;
+  margin-left: var(--space-1);
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  cursor: help;
+  vertical-align: middle;
+  line-height: 1.4;
+}
