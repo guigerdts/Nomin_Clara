@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useDraftQuincena, getFortnightRange } from '../useDraftQuincena';
-import type { DraftQuincena, WorkedDay } from '../../lib/types';
+import type { DraftQuincena } from '../../lib/types';
 
 beforeEach(() => {
   localStorage.clear();
