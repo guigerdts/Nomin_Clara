@@ -195,14 +195,17 @@ export function GlosarioRecargos() {
               DISTINTO de descanso, no simplemente el domingo siguiente.
             </p>
             <p>
-              Hay dos escenarios: si trabajás domingos de forma <strong>ocasional</strong> (hasta 6
-              domingos en un semestre), el compensatorio se paga con un recargo del 90%
-              sobre el valor del día. Si lo hacés de forma <strong>habitual</strong> (más de 6), además
-              del recargo, te debe quedar un día completo de descanso compensatorio en la
-              semana — no te lo pueden "pagar" en plata.
+              Hay dos escenarios según el <strong>mismo mes calendario</strong>. Si trabajás
+              domingos o festivos hasta 2 veces en el mismo mes (<strong>ocasional</strong>),
+              <strong>elegís vos</strong> entre el recargo dominical/festivo del 90% en
+              dinero o un día de descanso compensatorio remunerado — pero no las dos
+              cosas, es tu decisión, no del empleador. Si los trabajás 3 veces o más en
+              el mismo mes (<strong>habitual</strong>), tenés derecho a <strong>ambas</strong>:
+              el recargo del 90% en dinero <strong>y</strong> el día compensatorio. Ahí no
+              hay elección: te corresponden las dos.
             </p>
             <p>
-              <cite>Arts. 172–176, 179–180 CST; Ley 2466/2025</cite>
+              <cite>Arts. 172–176 CST, Arts. 179–180 CST (parágrafo Art. 179: definición ocasional/habitual); Ley 2466/2025</cite>
             </p>
           </section>
 
