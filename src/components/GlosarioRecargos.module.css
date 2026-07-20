@@ -165,6 +165,89 @@
   color: var(--color-text-secondary);
 }
 
+/* ---- Rights sections ---- */
+.rightsSection {
+  margin-bottom: var(--space-5);
+}
+
+.rightsSection p {
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  margin: 0 0 var(--space-2);
+}
+
+.rightsSection p:last-child {
+  margin-bottom: 0;
+}
+
+.rightsHeading {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  margin: 0 0 var(--space-2);
+  color: var(--color-primary);
+}
+
+.rightsSection cite {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.stepList {
+  padding-left: var(--space-5);
+  margin: 0;
+}
+
+.stepList li {
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+/* ---- Official links footer ---- */
+.links {
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.links h4 {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.links li {
+  margin-bottom: var(--space-1);
+}
+
+.links a {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.links a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* ---- Disclaimer ---- */
+.disclaimer {
+  margin-top: var(--space-3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+}
+
 /* ---- Mobile ---- */
 @media (max-width: 639px) {
   .table thead {

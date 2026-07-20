@@ -2,6 +2,21 @@ import { useMemo } from 'react';
 import { SMMLV, getOrdinaryHourValue, RATES, formatPercent, formatCOP } from '../lib/rates';
 import styles from './GlosarioRecargos.module.css';
 
+const OFFICIAL_LINKS = [
+  {
+    label: 'Código Sustantivo del Trabajo',
+    href: 'https://www.suin-juriscol.gov.co/viewDocument.asp?ruta=Codigo/30019323',
+  },
+  {
+    label: 'Ley 2466 de 2025 (texto oficial)',
+    href: 'https://www.suin-juriscol.gov.co/viewDocument.asp?id=30055086',
+  },
+  {
+    label: 'Función Pública (versión consolidada)',
+    href: 'https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=260676',
+  },
+];
+
 interface Concepto {
   nombreSencillo: string;
   titulo: string;
@@ -162,6 +177,100 @@ export function GlosarioRecargos() {
               ))}
             </div>
           </details>
+        </div>
+      </details>
+
+      <details className={styles.details}>
+        <summary className={styles.summary}>
+          <h2 className={styles.heading}>Conocé tus derechos laborales</h2>
+          <span className={styles.summaryIcon}>▼</span>
+        </summary>
+        <div className={styles.content}>
+          <section className={styles.rightsSection}>
+            <h3 className={styles.rightsHeading}>Tu descanso obligatorio y día compensatorio</h3>
+            <p>
+              Todo trabajador tiene derecho a un día de descanso remunerado a la semana,
+              que en principio es el domingo (Arts. 172–173 CST). Si te hacen trabajar en
+              tu día de descanso obligatorio, tenés derecho a un <strong>día compensatorio</strong> — un día
+              DISTINTO de descanso, no simplemente el domingo siguiente.
+            </p>
+            <p>
+              Hay dos escenarios: si trabajás domingos de forma <strong>ocasional</strong> (hasta 6
+              domingos en un semestre), el compensatorio se paga con un recargo del 90%
+              sobre el valor del día. Si lo hacés de forma <strong>habitual</strong> (más de 6), además
+              del recargo, te debe quedar un día completo de descanso compensatorio en la
+              semana — no te lo pueden "pagar" en plata.
+            </p>
+            <p>
+              <cite>Arts. 172–176, 179–180 CST; Ley 2466/2025</cite>
+            </p>
+          </section>
+
+          <section className={styles.rightsSection}>
+            <h3 className={styles.rightsHeading}>Jornada máxima legal</h3>
+            <p>
+              Desde julio de 2026, la jornada máxima en Colombia es de <strong>42 horas semanales</strong>
+              (Ley 2101/2021). Esa es la jornada ordinaria — lo que trabajás de más se paga
+              como hora extra con los recargos que viste en la tabla de arriba.
+            </p>
+            <p>
+              Las horas extra tienen límites: máximo <strong>2 horas al día</strong> y <strong>12 a la semana</strong>
+              (Art. 161 CST, Art. 22 Decreto 2352/1965). Si tu empleador te exige más que
+              eso, necesita autorización expresa del Ministerio de Trabajo. Sin esa
+              autorización, las horas extra que excedan estos límites son ilegales.
+            </p>
+            <p>
+              La Ley 2466/2025 también actualizó los recargos nocturnos y mantiene intactos
+              los topes de jornada máxima.
+            </p>
+            <p>
+              <cite>Art. 161 CST; Art. 22 Decreto 2352/1965; Ley 2101/2021; Ley 2466/2025</cite>
+            </p>
+          </section>
+
+          <section className={styles.rightsSection}>
+            <h3 className={styles.rightsHeading}>Cómo reclamar si algo no cuadra</h3>
+            <p>
+              Si revisaste tu liquidación y algo no cierra con lo que dice la ley, este
+              es el camino:
+            </p>
+            <ol className={styles.stepList}>
+              <li>
+                <strong>Reclamo por escrito a RR.HH. o nómina.</strong> Presentalo formalmente,
+                pedí que te reciban una copia con fecha y sello. Guardá esa constancia — es
+                tu mejor prueba.
+              </li>
+              <li>
+                <strong>Inspección del Ministerio de Trabajo.</strong> Si no hay respuesta o es
+                insatisfactoria, presentate en una oficina del Ministerio de Trabajo o usá
+                su canal digital. Hacen una visita de inspección y pueden ordenar el pago
+                de lo adeudado.
+              </li>
+              <li>
+                <strong>Demanda laboral.</strong> Si la inspección no resuelve, podés iniciar un
+                proceso ordinario laboral ante un juez. Acá ya conviene tener abogado.
+              </li>
+            </ol>
+          </section>
+
+          <footer className={styles.links}>
+            <h4>Fuentes oficiales</h4>
+            <ul>
+              {OFFICIAL_LINKS.map((link, i) => (
+                <li key={i}>
+                  <a href={link.href} target="_blank" rel="noopener noreferrer">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </footer>
+
+          <p className={styles.disclaimer}>
+            Esta información es educativa y no constituye asesoría legal. Las leyes
+            pueden cambiar y cada caso tiene particularidades. Si tenés una situación
+            concreta, consultá con un abogado laboral.
+          </p>
         </div>
       </details>
     </div>
