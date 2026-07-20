@@ -107,4 +107,12 @@ export interface ScheduleClassifierInput {
   salary: number;
 }
 
+export interface DraftQuincena {
+  id: string;
+  startDate: string;
+  endDate: string;
+  workedDays: WorkedDay[];
+  lastUpdated: string;
+}
+
 export type Theme = 'light' | 'dark';

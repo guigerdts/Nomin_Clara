@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { CalculatorPage } from '../CalculatorPage';
@@ -420,5 +420,146 @@ describe('CalculatorPage — saveRecord with deductions and schedule mode', () =
 
     // Verify no crashes and the record renders
     expect(screen.getByText(/\$1\.574\.760/)).toBeInTheDocument();
+  });
+});
+
+describe('CalculatorPage — daily draft quincena', () => {
+  it('shows Hoy section in schedule mode with Agregar hoy button', async () => {
+    renderPage();
+
+    // Switch to schedule mode
+    fireEvent.click(screen.getByRole('button', { name: /horario detallado/i }));
+
+    // Wait for schedule mode to render, then check Hoy section is present
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /agregar hoy/i })).toBeInTheDocument();
+    });
+  });
+
+  it('adds a day to draft via Agregar hoy button', async () => {
+    renderPage();
+
+    // Switch to schedule mode
+    fireEvent.click(screen.getByRole('button', { name: /horario detallado/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/perfil semanal/i)).toBeInTheDocument();
+    });
+
+    // Click "Agregar hoy"
+    fireEvent.click(screen.getByRole('button', { name: /agregar hoy/i }));
+
+    // Should show the draft progress counter
+    await waitFor(() => {
+      expect(screen.getByText(/días registrados/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows stale draft dialog on mount when old draft exists', async () => {
+    // Pre-populate localStorage with an old (stale) draft
+    const oldStart = '2026-06-01';
+    const oldDraft = {
+      id: 'stale-test-1',
+      startDate: oldStart,
+      endDate: '2026-06-15',
+      workedDays: [
+        { date: '2026-06-01', entryTime: '08:00', exitTime: '17:00', lunchBreakMinutes: 60 },
+      ],
+      lastUpdated: new Date().toISOString(),
+    };
+    localStorage.setItem(`nomina-clara-draft-${oldStart}`, JSON.stringify(oldDraft));
+
+    cleanup();
+    renderPage();
+
+    // Should show the stale draft confirmation dialog
+    await waitFor(() => {
+      expect(screen.getByText(/registro sin cerrar/i)).toBeInTheDocument();
+    });
+
+    // Both action buttons should be present
+    expect(screen.getByRole('button', { name: 'Cerrar' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /descartar/i })).toBeInTheDocument();
+  });
+
+  it('discards stale draft on Descartar click', async () => {
+    const oldStart = '2026-06-01';
+    const oldDraft = {
+      id: 'stale-test-2',
+      startDate: oldStart,
+      endDate: '2026-06-15',
+      workedDays: [
+        { date: '2026-06-01', entryTime: '08:00', exitTime: '17:00', lunchBreakMinutes: 60 },
+      ],
+      lastUpdated: new Date().toISOString(),
+    };
+    localStorage.setItem(`nomina-clara-draft-${oldStart}`, JSON.stringify(oldDraft));
+
+    cleanup();
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText(/registro sin cerrar/i)).toBeInTheDocument();
+    });
+
+    // Click Descartar
+    fireEvent.click(screen.getByRole('button', { name: /descartar/i }));
+
+    // Draft key should be removed from localStorage
+    await waitFor(() => {
+      const draftKeys = Object.keys(localStorage).filter(k =>
+        k.startsWith('nomina-clara-draft-'),
+      );
+      expect(draftKeys).toHaveLength(0);
+    });
+
+    // Dialog should be gone
+    expect(screen.queryByText(/registro sin cerrar/i)).not.toBeInTheDocument();
+  });
+
+  it('closes draft and creates saved record on Cerrar quincena', async () => {
+    renderPage();
+
+    // Enter salary
+    const salaryInput = screen.getByLabelText(/salario mensual base/i);
+    fireEvent.change(salaryInput, { target: { value: '2600000' } });
+
+    // Wait for manual calculation (auto-triggered)
+    await waitFor(() => {
+      expect(screen.getByText(/desglose de pago/i)).toBeInTheDocument();
+    });
+
+    // Switch to schedule mode
+    fireEvent.click(screen.getByRole('button', { name: /horario detallado/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/perfil semanal/i)).toBeInTheDocument();
+    });
+
+    // Click "Agregar hoy" to add a draft day
+    fireEvent.click(screen.getByRole('button', { name: /agregar hoy/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/días registrados/i)).toBeInTheDocument();
+    });
+
+    // Click "Cerrar quincena & save"
+    fireEvent.click(screen.getByRole('button', { name: /cerrar quincena/i }));
+
+    // Should now have a saved record in localStorage
+    await waitFor(() => {
+      const records = JSON.parse(
+        localStorage.getItem('nomina-clara-records') || '[]',
+      );
+      expect(records.length).toBe(1);
+      expect(records[0].workedDays).toBeDefined();
+      expect(records[0].mode).toBe('schedule');
+    });
+
+    // Draft key should be removed
+    const draftKeys = Object.keys(localStorage).filter(k =>
+      k.startsWith('nomina-clara-draft-'),
+    );
+    expect(draftKeys).toHaveLength(0);
   });
 });

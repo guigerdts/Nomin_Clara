@@ -2,6 +2,9 @@ import type { PayrollInput, InputMode, ScheduleProfile, WorkedDay } from '../../
 import { getTransportAllowance, formatCOP, SMMLV } from '../../lib/rates';
 import { ScheduleProfileForm } from './ScheduleProfileForm';
 import { DayEntryForm } from './DayEntryForm';
+import { useDraftQuincena } from '../../hooks/useDraftQuincena';
+import type { DraftSavePayload } from '../../hooks/useDraftQuincena';
+import { dayOfWeek } from '../../lib/scheduleClassifier';
 import styles from './PayrollForm.module.css';
 
 interface PayrollFormProps {
@@ -18,6 +21,7 @@ interface PayrollFormProps {
   onScheduleProfileChange?: (profile: ScheduleProfile) => void;
   workedDays?: WorkedDay[];
   onWorkedDaysChange?: (days: WorkedDay[]) => void;
+  onCloseFortnight?: (payload: DraftSavePayload) => void;
 }
 
 const CONCEPT_FIELDS: {
@@ -70,6 +74,30 @@ function Tooltip({ tip }: { tip: string }) {
   );
 }
 
+const FULL_MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+function formatDateDisplay(isoDate: string): string {
+  const d = new Date(isoDate + 'T12:00:00');
+  return `${d.getDate()} ${FULL_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function formatDateShort(isoDate: string): string {
+  const d = new Date(isoDate + 'T12:00:00');
+  return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+}
+
+function formatDateRange(start: string, end: string): string {
+  return `${formatDateDisplay(start)} al ${formatDateDisplay(end)}`;
+}
+
+function todayISO(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = (d.getMonth() + 1).toString().padStart(2, '0');
+  const day = d.getDate().toString().padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 export function PayrollForm({
   values,
   alias,
@@ -84,12 +112,47 @@ export function PayrollForm({
   onScheduleProfileChange,
   workedDays,
   onWorkedDaysChange,
+  onCloseFortnight,
 }: PayrollFormProps) {
   const transport = getTransportAllowance(values.salary);
+  const {
+    draft,
+    addDay,
+    updateDay,
+    removeDay,
+    closeDraft,
+    discardDraft,
+    progress,
+    staleDraftInfo,
+  } = useDraftQuincena();
 
   const handleNumberChange = (field: keyof PayrollInput, raw: string) => {
     const parsed = raw === '' ? 0 : parseFloat(raw);
     onNumberChange(field, isNaN(parsed) ? 0 : parsed);
+  };
+
+  const handleAddToday = () => {
+    const today = todayISO();
+    const dow = dayOfWeek(today);
+    const daySchedule = scheduleProfile?.schedules[dow];
+    addDay({
+      date: today,
+      entryTime: daySchedule?.entryTime ?? '08:00',
+      exitTime: daySchedule?.exitTime ?? '17:00',
+      lunchBreakMinutes: daySchedule?.lunchBreakMinutes ?? 60,
+    });
+  };
+
+  const handleCloseFortnightClick = () => {
+    closeDraft(payload => onCloseFortnight?.(payload));
+  };
+
+  const handleStaleClose = () => {
+    closeDraft(payload => onCloseFortnight?.(payload));
+  };
+
+  const handleStaleDiscard = () => {
+    discardDraft();
   };
 
   return (
@@ -113,6 +176,112 @@ export function PayrollForm({
           >
             Horario Detallado
           </button>
+        </div>
+      )}
+
+      {/* Stale draft dialog — shown on mount regardless of mode */}
+      {staleDraftInfo?.exists && (
+        <div className={styles.staleOverlay}>
+          <div className={styles.staleDialog}>
+            <p className={styles.staleText}>
+              Tienes un registro sin cerrar del {formatDateRange(staleDraftInfo.startDate, staleDraftInfo.endDate)}.
+              {' '}¿Querés cerrarlo ahora o descartarlo?
+            </p>
+            <div className={styles.staleDialogBtns}>
+              <button type="button" className="btn btn-primary" onClick={handleStaleClose}>
+                Cerrar
+              </button>
+              <button type="button" className="btn btn-secondary" onClick={handleStaleDiscard}>
+                Descartar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hoy section — schedule mode only */}
+      {inputMode === 'schedule' && (
+        <div className={styles.hoySection}>
+          <div className={styles.hoyHeader}>
+            <span className={styles.hoyTitle}>📅 Hoy, {formatDateDisplay(todayISO())}</span>
+            <button
+              type="button"
+              className="btn btn-primary btn-small"
+              onClick={handleAddToday}
+              disabled={!!staleDraftInfo?.exists}
+            >
+              Agregar hoy
+            </button>
+          </div>
+          <p className={styles.hoySubtext}>
+            Registrá tus horas del día a día. Al final de la quincena, cerrás y se guarda automáticamente.
+          </p>
+          {draft && draft.workedDays.length > 0 && (
+            <p className={styles.hoyProgress}>
+              Días registrados: {progress.registered}/{progress.total}
+            </p>
+          )}
+          {draft && draft.workedDays.length > 0 && (
+            <div className={styles.hoyDayList}>
+              {draft.workedDays.map(day => (
+                <div key={day.date} className={styles.hoyDayRow}>
+                  <span className={styles.hoyDayDate}>{formatDateShort(day.date)}</span>
+                  <div className={styles.hoyDayFields}>
+                    <div className={styles.fieldGroup}>
+                      <label className={styles.hoyFieldLabel} htmlFor={`draft-entry-${day.date}`}>Entrada</label>
+                      <input
+                        type="time"
+                        id={`draft-entry-${day.date}`}
+                        value={day.entryTime ?? ''}
+                        className={styles.hoyTimeInput}
+                        onChange={e => updateDay(day.date, { entryTime: e.target.value || null })}
+                      />
+                    </div>
+                    <div className={styles.fieldGroup}>
+                      <label className={styles.hoyFieldLabel} htmlFor={`draft-exit-${day.date}`}>Salida</label>
+                      <input
+                        type="time"
+                        id={`draft-exit-${day.date}`}
+                        value={day.exitTime ?? ''}
+                        className={styles.hoyTimeInput}
+                        onChange={e => updateDay(day.date, { exitTime: e.target.value || null })}
+                      />
+                    </div>
+                    <div className={styles.fieldGroup}>
+                      <label className={styles.hoyFieldLabel} htmlFor={`draft-lunch-${day.date}`}>Almuerzo</label>
+                      <input
+                        type="number"
+                        id={`draft-lunch-${day.date}`}
+                        min={0}
+                        step={15}
+                        value={day.lunchBreakMinutes ?? ''}
+                        className={styles.hoyLunchInput}
+                        onChange={e => updateDay(day.date, { lunchBreakMinutes: e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value) || 0) })}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-icon"
+                    onClick={() => removeDay(day.date)}
+                    aria-label={`Quitar ${formatDateShort(day.date)}`}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {draft && draft.workedDays.length > 0 && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleCloseFortnightClick}
+              style={{ marginTop: '0.75rem', width: '100%' }}
+            >
+              Cerrar quincena &amp; save
+            </button>
+          )}
         </div>
       )}
 

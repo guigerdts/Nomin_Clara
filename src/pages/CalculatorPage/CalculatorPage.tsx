@@ -6,6 +6,7 @@ import { scheduleClassifier } from '../../lib/scheduleClassifier';
 import { getAllRecords, saveRecord, deleteRecord, exportAllData } from '../../lib/storage';
 import { downloadBlob, today } from '../../lib/importExport';
 import { showToast } from '../../components/Toast';
+import type { DraftSavePayload } from '../../hooks/useDraftQuincena';
 import { PayrollForm } from './PayrollForm';
 import { ResultsCard } from './ResultsCard';
 import { HistorySection } from './HistorySection';
@@ -243,6 +244,51 @@ export function CalculatorPage() {
     setRecords(migrateSavedRecords(getAllRecords()));
   }, []);
 
+  const handleCloseFortnight = useCallback((payload: DraftSavePayload) => {
+    if (inputs.salary <= 0) {
+      showToast('Ingrese un salario válido antes de cerrar la quincena.', 'error');
+      return;
+    }
+
+    const breakdown = calculateBreakdown({ ...inputs, alias: alias || undefined });
+
+    const record = {
+      alias: alias.trim() || 'Sin nombre',
+      quincena: payload.startDate,
+      salary: inputs.salary,
+      transportAllowance: breakdown.transport,
+      inputs: {
+        salary: inputs.salary,
+        dayOT: inputs.dayOT,
+        nightOT: inputs.nightOT,
+        holidayDayOT: inputs.holidayDayOT,
+        holidayNightOT: inputs.holidayNightOT,
+        nightSurcharge: inputs.nightSurcharge,
+        holidaySurcharge: inputs.holidaySurcharge,
+        holidayNightSurcharge: inputs.holidayNightSurcharge,
+      },
+      breakdown: breakdown.entries,
+      totalCalculated: breakdown.grandTotal,
+      totalActual: actualPay > 0 ? actualPay : null,
+      totalOT: breakdown.totalOT,
+      difference: actualPay > 0 ? actualPay - breakdown.grandTotal : null,
+      deductionsInput,
+      splitMode,
+      mode: 'schedule' as const,
+      scheduleProfile: scheduleProfile ?? undefined,
+      workedDays: payload.workedDays,
+    };
+
+    try {
+      saveRecord(record);
+      setRecords(migrateSavedRecords(getAllRecords()));
+      showToast('Quincena cerrada y guardada correctamente.', 'success');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error desconocido';
+      showToast(`Error al guardar: ${msg}`, 'error');
+    }
+  }, [inputs, alias, actualPay, deductionsInput, splitMode, scheduleProfile]);
+
   const filteredRecords = alias.trim()
     ? records.filter(r => r.alias === alias.trim()).slice(0, 10)
     : records.slice(0, 10);
@@ -272,6 +318,7 @@ export function CalculatorPage() {
           onScheduleProfileChange={setScheduleProfile}
           workedDays={workedDays}
           onWorkedDaysChange={setWorkedDays}
+          onCloseFortnight={handleCloseFortnight}
         />
 
         {result && (
