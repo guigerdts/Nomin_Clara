@@ -54,8 +54,8 @@
   font-weight: 600;
   padding: 1px 5px;
   border-radius: 999px;
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
   cursor: help;
   vertical-align: middle;
   line-height: 1.4;

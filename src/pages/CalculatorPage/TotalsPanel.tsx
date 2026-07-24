@@ -78,9 +78,9 @@ export function TotalsPanel({ result, deductions, splitMode }: TotalsPanelProps)
           style={{
             marginTop: 'var(--space-2)',
             padding: 'var(--space-2)',
-            background: 'var(--color-primary, #2563eb)',
-            color: '#fff',
-            borderRadius: 'var(--radius-md)',
+          background: 'var(--color-primary)',
+          color: '#fff',
+          borderRadius: 'var(--radius-md)',
           }}
         >
           <span style={{ fontSize: '1.1rem' }}><strong>NETO A PAGAR:</strong></span>

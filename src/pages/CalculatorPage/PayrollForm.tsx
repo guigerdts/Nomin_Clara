@@ -68,7 +68,7 @@ const CONCEPT_FIELDS: {
 
 function Tooltip({ tip }: { tip: string }) {
   return (
-    <span className="tooltip-trigger" data-tip={tip}>
+    <span className="tooltip-trigger" data-tip={tip} tabIndex={0} role="tooltip" aria-label={tip}>
       ⓘ
     </span>
   );

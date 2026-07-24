@@ -17,6 +17,12 @@
   display: block;
 }
 
+@media (min-width: 1024px) {
+  .canvas {
+    height: 350px;
+  }
+}
+
 .empty {
   text-align: center;
   padding: var(--space-8);
