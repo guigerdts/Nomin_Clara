@@ -1,14 +1,15 @@
 .profileForm { margin-top: var(--space-4); }
 .subtitle { font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-bottom: var(--space-4); }
 
-.fieldGroup { display: flex; flex-direction: column; gap: 4px; margin-bottom: var(--space-4); }
+.fieldGroup { display: flex; flex-direction: column; gap: 4px; margin-bottom: var(--space-4); border: none; padding: 0; min-inline-size: auto; }
 .label { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text); margin-bottom: var(--space-1); }
 
 .daysRow { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
 .dayCheckbox {
   display: inline-flex; align-items: center; gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  min-height: 44px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer; font-size: var(--font-size-sm);

@@ -39,7 +39,7 @@ function drawChart(
   const dpr = window.devicePixelRatio || 1;
   const rect = container?.getBoundingClientRect();
   const width = rect?.width || 600;
-  const height = 200;
+  const height = Math.min(280, Math.max(150, width * 0.35));
 
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;

@@ -118,7 +118,7 @@ export function GlosarioRecargos() {
       <details className={styles.details}>
         <summary className={styles.summary}>
           <h2 className={styles.heading}>¿Qué significa cada recargo?</h2>
-          <span className={styles.summaryIcon}>▼</span>
+          <span className={styles.summaryIcon} aria-hidden="true">▼</span>
         </summary>
         <div className={styles.content}>
           <p className={styles.intro}>
@@ -183,7 +183,7 @@ export function GlosarioRecargos() {
       <details className={styles.details}>
         <summary className={styles.summary}>
           <h2 className={styles.heading}>Conocé tus derechos laborales</h2>
-          <span className={styles.summaryIcon}>▼</span>
+          <span className={styles.summaryIcon} aria-hidden="true">▼</span>
         </summary>
         <div className={styles.content}>
           <section className={styles.rightsSection}>

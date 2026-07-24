@@ -13,7 +13,7 @@ export function Header() {
     <header className={styles.navbar}>
       <div className={styles.inner}>
         <NavLink to="/" className={styles.brand} onClick={closeMenu}>
-          <span className={styles.brandIcon}>📋</span>
+          <span className={styles.brandIcon} aria-hidden="true">📋</span>
           <span className={styles.brandText}>Nómina Clara</span>
         </NavLink>
 
@@ -58,7 +58,7 @@ export function Header() {
             onClick={() => { toggleTheme(); closeMenu(); }}
             aria-label="Cambiar modo oscuro/claro"
           >
-            <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
+            <span aria-hidden="true">{theme === 'dark' ? '☀️' : '🌙'}</span>
             {theme === 'dark' ? ' Modo claro' : ' Modo oscuro'}
           </button>
         </nav>
@@ -69,7 +69,7 @@ export function Header() {
           onClick={toggleTheme}
           aria-label="Cambiar modo oscuro/claro"
         >
-          <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
+          <span aria-hidden="true">{theme === 'dark' ? '☀️' : '🌙'}</span>
         </button>
       </div>
     </header>

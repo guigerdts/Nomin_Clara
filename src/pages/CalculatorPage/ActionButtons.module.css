@@ -1,1 +1,3 @@
-/* ActionButtons styles — uses global .result-actions class */
+.actionsRow {
+  margin-top: var(--space-2);
+}

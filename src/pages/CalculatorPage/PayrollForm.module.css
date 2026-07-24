@@ -180,3 +180,13 @@
   gap: var(--space-3);
   justify-content: flex-end;
 }
+
+.closeBtn {
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
+.errorText {
+  color: var(--color-danger);
+  font-size: var(--font-size-xs);
+}

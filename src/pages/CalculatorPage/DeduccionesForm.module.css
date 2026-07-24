@@ -164,10 +164,11 @@
 /* Split mode radio group */
 .splitModeSection {
   margin: var(--space-2) 0 var(--space-4);
+  border: none;
   padding: var(--space-3);
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  min-inline-size: auto;
 }
 
 .splitModeTitle {
@@ -238,6 +239,7 @@
   align-items: flex-start;
   gap: var(--space-2);
   padding: var(--space-2) 0;
+  min-height: 44px;
   cursor: pointer;
 }
 

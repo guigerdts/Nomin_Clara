@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { SavedRecord } from '../../lib/types';
 import { formatCOP } from '../../lib/rates';
+import styles from './HistoryTable.module.css';
 
 interface HistoryTableProps {
   records: SavedRecord[];
@@ -55,7 +56,7 @@ export function HistoryTable({ records, onDelete }: HistoryTableProps) {
                     onClick={() => setDeleteTarget(rec.id)}
                     aria-label={`Eliminar registro de ${rec.alias} (${rec.quincena})`}
                   >
-                    ✕
+                    <span aria-hidden="true">✕</span>
                   </button>
                 </td>
               </tr>
@@ -71,35 +72,20 @@ export function HistoryTable({ records, onDelete }: HistoryTableProps) {
           aria-modal="true"
           aria-labelledby="delete-dialog-title"
           aria-describedby="delete-dialog-desc"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.5)',
-          }}
+          className={styles.overlay}
           onClick={() => setDeleteTarget(null)}
         >
           <div
-            style={{
-              background: 'var(--color-surface, #fff)',
-              borderRadius: 'var(--radius-xl, 16px)',
-              padding: 'var(--space-6, 2rem)',
-              maxWidth: '380px',
-              width: '90%',
-              boxShadow: 'var(--shadow-xl, 0 8px 32px rgba(0,0,0,0.12))',
-            }}
+            className={styles.dialog}
             onClick={e => e.stopPropagation()}
           >
-            <h3 id="delete-dialog-title" style={{ margin: '0 0 var(--space-2, 0.5rem)', fontSize: '1.125rem' }}>
+            <h3 id="delete-dialog-title" className={styles.title}>
               ¿Eliminar este registro?
             </h3>
-            <p id="delete-dialog-desc" style={{ margin: '0 0 var(--space-4, 1rem)', color: 'var(--color-text-secondary, #666)', fontSize: '0.875rem' }}>
+            <p id="delete-dialog-desc" className={styles.desc}>
               Esta acción no se puede deshacer. El registro se borrará permanentemente.
             </p>
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+            <div className={styles.buttonRow}>
               <button
                 type="button"
                 className="btn btn-secondary"

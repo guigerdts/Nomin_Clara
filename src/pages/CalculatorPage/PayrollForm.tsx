@@ -69,7 +69,7 @@ const CONCEPT_FIELDS: {
 function Tooltip({ tip }: { tip: string }) {
   return (
     <span className="tooltip-trigger" data-tip={tip} tabIndex={0} role="tooltip" aria-label={tip}>
-      ⓘ
+      <span aria-hidden="true">ⓘ</span>
     </span>
   );
 }
@@ -203,7 +203,7 @@ export function PayrollForm({
       {inputMode === 'schedule' && (
         <div className={styles.hoySection}>
           <div className={styles.hoyHeader}>
-            <span className={styles.hoyTitle}>📅 Hoy, {formatDateDisplay(todayISO())}</span>
+            <span className={styles.hoyTitle}><span aria-hidden="true">📅</span> Hoy, {formatDateDisplay(todayISO())}</span>
             <button
               type="button"
               className="btn btn-primary btn-small"
@@ -275,9 +275,8 @@ export function PayrollForm({
           {draft && draft.workedDays.length > 0 && (
             <button
               type="button"
-              className="btn btn-primary"
+              className={`btn btn-primary ${styles.closeBtn}`}
               onClick={handleCloseFortnightClick}
-              style={{ marginTop: '0.75rem', width: '100%' }}
             >
               Cerrar quincena &amp; save
             </button>
@@ -308,7 +307,7 @@ export function PayrollForm({
             onChange={e => handleNumberChange('salary', e.target.value)}
           />
           {salaryError && (
-            <span id="salary-error" className="field-error" style={{ color: 'var(--color-danger)', fontSize: 'var(--font-size-xs)' }}>
+            <span id="salary-error" className={`field-error ${styles.errorText}`}>
               {salaryError}
             </span>
           )}
@@ -400,7 +399,7 @@ export function PayrollForm({
         {/* OT Warnings (manual mode only) */}
         {inputMode === 'manual' && warnings.length > 0 && (
           <div id="ot-warning" className="alert alert-warning">
-            <strong>⚠️ Límites de horas extra</strong>
+            <strong><span aria-hidden="true">⚠️</span> Límites de horas extra</strong>
             <ul>
               {warnings.map((w, i) => (
                 <li key={i}>{w}</li>

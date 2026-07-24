@@ -196,9 +196,9 @@ export function ScheduleProfileForm({ profile, onChange }: ScheduleProfileFormPr
       <h2>Perfil semanal</h2>
       <p className={styles.subtitle}>Configurá tu horario base para la clasificación automática de horas.</p>
 
-      <div className={styles.fieldGroup}>
-        <label className={styles.label}>Días laborales</label>
-        <div className={styles.daysRow} role="group" aria-label="Días laborales">
+      <fieldset className={styles.fieldGroup}>
+        <legend className={styles.label}>Días laborales</legend>
+        <div className={styles.daysRow}>
           {ALL_DAYS.map(({ key, label }) => (
             <label key={key} className={styles.dayCheckbox}>
               <input type="checkbox" checked={checkedDays.includes(key)} onChange={() => toggleDay(key)} />
@@ -206,7 +206,7 @@ export function ScheduleProfileForm({ profile, onChange }: ScheduleProfileFormPr
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {checkedDays.length > 0 && (
         allIdentical ? renderCollapsedInputs() : checkedDays.map(renderTimeInputs)

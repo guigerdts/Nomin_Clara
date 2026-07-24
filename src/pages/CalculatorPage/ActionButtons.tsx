@@ -1,3 +1,5 @@
+import styles from './ActionButtons.module.css';
+
 interface ActionButtonsProps {
   onSave: () => void;
   onExport: () => void;
@@ -7,15 +9,15 @@ interface ActionButtonsProps {
 
 export function ActionButtons({ onSave, onExport, onPrint, onClear }: ActionButtonsProps) {
   return (
-    <div className="result-actions" style={{ marginTop: 'var(--space-2)' }}>
+    <div className={`${styles.actionsRow} result-actions`}>
       <button type="button" id="save-btn" className="btn btn-primary" onClick={onSave}>
-        💾 Guardar registro
+        <span aria-hidden="true">💾</span> Guardar registro
       </button>
       <button type="button" id="export-btn" className="btn btn-secondary" onClick={onExport}>
-        📤 Exportar mis datos
+        <span aria-hidden="true">📤</span> Exportar mis datos
       </button>
       <button type="button" id="print-btn" className="btn btn-secondary" onClick={onPrint}>
-        🖨️ Imprimir
+        <span aria-hidden="true">🖨️</span> Imprimir
       </button>
       <button type="button" id="clear-btn" className="btn btn-secondary" onClick={onClear}>
         Limpiar

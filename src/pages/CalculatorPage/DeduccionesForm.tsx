@@ -40,8 +40,8 @@ export function DeduccionesForm({ salary, values, onChange, splitMode, onSplitMo
       </p>
 
       {/* ── Quincena split mode ──────────────────────────── */}
-      <div className={styles.splitModeSection}>
-        <h3 className={styles.splitModeTitle}>
+      <fieldset className={styles.splitModeSection}>
+        <legend className={styles.splitModeTitle}>
           Distribución quincenal de descuentos
           <span className={styles.infoIcon} tabIndex={0} role="tooltip" aria-label="Más información">
             <span className={styles.tooltipText}>
@@ -49,7 +49,7 @@ export function DeduccionesForm({ salary, values, onChange, splitMode, onSplitMo
               puede verse distinto solo por esto, sin que sea un error real de pago.
             </span>
           </span>
-        </h3>
+        </legend>
         <p className={styles.hint}>
           Elegí cómo se distribuyen los descuentos entre la primera y segunda quincena del mes.
         </p>
@@ -75,7 +75,7 @@ export function DeduccionesForm({ salary, values, onChange, splitMode, onSplitMo
             </span>
           </label>
         ))}
-      </div>
+      </fieldset>
 
       {/* ── 1. Salud + Pensión ────────────────────────────── */}
       <label className={styles.toggle}>
@@ -128,7 +128,7 @@ export function DeduccionesForm({ salary, values, onChange, splitMode, onSplitMo
         {retefuenteOpen && (
           <div className={styles.collapsibleContent}>
             <div className={styles.alertBox}>
-              <strong>⚠️ Estimado aproximado</strong>
+              <strong><span aria-hidden="true">⚠️</span> Estimado aproximado</strong>
               <p>
                 El cálculo real depende de rentas exentas adicionales, deducciones
                 por dependientes, intereses hipotecarios, medicina prepagada y otros
