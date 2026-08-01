@@ -158,6 +158,60 @@ describe('LiquidacionPage — coexistence with IndemnizacionSection', () => {
   });
 });
 
+describe('LiquidacionPage — coexistence with SuspensionSection', () => {
+  it('renders the third section below indemnización with its heading and form', () => {
+    renderPage();
+
+    const indemnizacion = screen.getByRole('region', { name: /indemnización por despido/i });
+    const suspension = screen.getByRole('region', { name: /suspensión del contrato/i });
+
+    // SuspensionSection sits below IndemnizacionSection in the DOM.
+    expect(indemnizacion.compareDocumentPosition(suspension) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    expect(
+      within(suspension).getByRole('heading', { name: 'Suspensión del contrato de trabajo' }),
+    ).toBeInTheDocument();
+    expect(
+      within(suspension).getByRole('combobox', { name: /causal de la suspensión/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps prestaciones results and indemnización unchanged with the third section present', () => {
+    renderPage();
+    fillLiveCalc('2026-01-01', '2026-07-31', '2600000', '0');
+
+    // Prestaciones behave exactly as before SuspensionSection was added.
+    const results = screen.getByRole('region', { name: /resultado/i });
+    expect(within(results).getByText('Cesantías')).toBeInTheDocument();
+    expect(within(results).getByText('Total liquidación')).toBeInTheDocument();
+    expect(within(results).getByText('$2.774.068,05')).toBeInTheDocument();
+
+    // Indemnización section renders with its own default gate and form.
+    const indemnizacion = screen.getByRole('region', { name: /indemnización por despido/i });
+    expect(
+      within(indemnizacion).getByRole('radio', { name: 'Despido sin justa causa' }),
+    ).toBeChecked();
+    expect(
+      within(indemnizacion).getByRole('button', { name: /calcular indemnización/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('has no label collisions across the three sections', () => {
+    renderPage();
+
+    // Prestaciones form labels resolve to a single element each.
+    expect(screen.getByLabelText(/fecha de ingreso/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/salario mensual base/i)).toBeInTheDocument();
+
+    // Suspension section labels resolve uniquely too.
+    expect(screen.getByLabelText(/causal de la suspensión/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/fecha de inicio de la suspensión/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/fecha de fin de la suspensión/i)).toBeInTheDocument();
+
+    // Indemnización labels stay unique ("del contrato" vs "de la suspensión").
+    expect(screen.getByLabelText(/fecha de inicio del contrato/i)).toBeInTheDocument();
+  });
+});
+
 describe('LiquidacionPage — navigation', () => {
   it('exposes a NavLink "Liquidación" pointing to /liquidacion in the Header', () => {
     render(

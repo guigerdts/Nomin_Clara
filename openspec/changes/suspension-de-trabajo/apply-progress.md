@@ -125,3 +125,83 @@ PR1 tasks 0.1–1.4: **6/6 complete**. All green. Ready for next batch (PR2 UI) 
 
 ## Status
 PR1 (0.1–1.4) + PR2 (2.1–2.4): **10/10 complete**. All green. Ready for PR3 (component tests + wiring).
+
+---
+
+# PR3 Slice — tasks 3.1–3.4 (component tests + page wiring)
+
+**Branch**: `suspension/pr3-tests-wiring` (based on `origin/suspension/pr2-ui`, commit `355dbea`)
+**Slice**: PR3 — `SuspensionSection.test.tsx` (task 3.1), `LiquidacionPage.tsx` wiring (task 3.2), `LiquidacionPage.test.tsx` coexistence tests (task 3.3), full verification (task 3.4). NO section logic changes, no new features, no refactors of the section.
+**Mode**: STRICT TDD (`openspec/config.yaml` → `tdd: true`; runner `npx vitest run`)
+**Workload decision**: resolved by orchestrator — chained PR slice PR3 (tasks 3.1–3.4); PR1 logic / PR2 UI already merged in prior batches.
+
+## RED → GREEN Table (PR3)
+
+| Task | RED (test written first) | GREEN (impl passes) | Evidence |
+|------|--------------------------|---------------------|----------|
+| 3.1 `__tests__/SuspensionSection.test.tsx` | ✅ Written as the FIRST file of the batch (no production/wiring change preceded it). 1 real RED failure observed on the citation assertion (expected 8, rendered 10) → corrected to `CAUSALES.length` (all 10 causales carry `CST Art. 51`, per D5 metadata) | ✅ 33/33 against the PR2-shipped component API | RED-correction captured in first focused run → `/tmp/opencode/vitest-pr3-suspensionsection.log` (33/33) |
+| 3.2 `LiquidacionPage.tsx` wiring | N/A — implementation of 3.3's RED (2-line change: import + render below `<IndemnizacionSection />`) | ✅ page test file 12/12 | `/tmp/opencode/vitest-pr3-page-green.log` (54/54 across the 3 LiquidacionPage test files) |
+| 3.3 `__tests__/LiquidacionPage.test.tsx` | ✅ Written BEFORE 3.2 wiring — `npx vitest run LiquidacionPage.test.tsx` → **2 failed** (third section missing, label collisions) | ✅ after 3.2 wiring → 12/12 | RED → `/tmp/opencode/vitest-pr3-page-red.log` (2 failed / 10 passed) → GREEN `/tmp/opencode/vitest-pr3-page-green.log` (54/54) |
+| 3.4 Full verification | N/A (verification task) | ✅ | 337/337 full suite + `tsc --noEmit` exit 0 + `vite build` 3.99s exit 0 |
+
+## TDD Cycle Evidence (Strict TDD — PR3)
+
+| Task | Test File | Layer | Safety Net | RED | GREEN | TRIANGULATE | REFACTOR |
+|------|-----------|-------|------------|-----|-------|-------------|----------|
+| 3.1 | `src/pages/LiquidacionPage/__tests__/SuspensionSection.test.tsx` | Integration | ✅ 16 files / 301 tests | ✅ Written first in batch; citation assertion failed RED (8 vs 10) and was corrected to `CAUSALES.length` | ✅ 33/33 passed | ✅ multiple cases per behavior: 8/9 + 60/61 boundaries, 9-causal `it.each` for hidden field, CRUD add/edit/delete, standard + special checklist, 5 direct `buildExcessWarning` cases | ➖ None needed |
+| 3.2 | N/A (2-line wiring; proven by 3.3) | Integration | ✅ 301 tests | N/A — the RED lives in 3.3 (written before this edit) | ✅ page tests 12/12 after edit | ➖ Single insertion point (`<IndemnizacionSection />` → `<SuspensionSection />` below) | ➖ None needed |
+| 3.3 | `src/pages/LiquidacionPage/__tests__/LiquidacionPage.test.tsx` | Integration | ✅ 301 tests | ✅ 2 new tests failed before 3.2 (third section + label collisions) | ✅ 12/12 (54/54 with sibling files) | ✅ prestaciones unchanged + indemnización unchanged regression assertions + DOM-order check (`compareDocumentPosition` FOLLOWING) | ➖ None needed |
+| 3.4 | N/A (verification) | — | ✅ 337 (after 3.1–3.3) | N/A | ✅ full suite 337/337, `tsc --noEmit` exit 0, `vite build` exit 0 | N/A | N/A |
+
+> **TDD note (3.1)**: the component under test was shipped in PR2, so 3.1's tests were written against the existing API — the batch produced its genuine RED in 3.3 (page tests before wiring). Per the PR2 apply-progress note, task 3.1's RED is "tests written first against this exact component API"; the one failing assertion observed during 3.1 (citation count) was a test-expectation correction, not a component defect. Verify can reconcile both slices.
+
+## Work Unit Evidence (PR3 slice)
+
+| Evidence | Required value |
+|----------|----------------|
+| Focused test command + exact result | `npx vitest run src/pages/LiquidacionPage/__tests__/SuspensionSection.test.tsx` → 33/33, exit 0 (`/tmp/opencode/vitest-pr3-suspensionsection.log`); `npx vitest run src/pages/LiquidacionPage/__tests__/LiquidacionPage.test.tsx` → RED 2 failed pre-wiring (`/tmp/opencode/vitest-pr3-page-red.log`) → GREEN 12/12 (`/tmp/opencode/vitest-pr3-page-green.log`) |
+| Runtime harness command/scenario + result | Full `npx vitest run` → 17 files / 337 tests, exit 0 (`/tmp/opencode/vitest-pr3.log`); `npx tsc --noEmit` exit 0 (`/tmp/opencode/vitest-pr3-tsc.log`); `npx vite build` → built in 3.99s, exit 0 (`/tmp/opencode/vitest-pr3-build.log`). Browser harness N/A for headless apply — component tests are the runtime proof of the wiring |
+| Rollback boundary | Delete `src/pages/LiquidacionPage/__tests__/SuspensionSection.test.tsx`; revert `src/pages/LiquidacionPage/LiquidacionPage.tsx` (2 lines: import + render) and the `coexistence with SuspensionSection` describe block in `__tests__/LiquidacionPage.test.tsx`. Apply-progress rows are inert docs |
+
+## Scenario → Test Mapping — PR3 closes all 18 spec scenarios at component level
+
+| # | Spec scenario | PR3 test (component layer; unit layer covered in PR1) |
+|---|---------------|--------------------------------------------------------|
+| REQ-1/1 | All eight causales with plain-language explanations | `lists the 8 Art. 51 causales in plain language with verbatim citation` |
+| REQ-1/2 | Citation is verbatim and display-only | same test — `CST Art. 51` × `CAUSALES.length`, no calculation |
+| REQ-2/3 | Asymmetric effects rendered per concept | `renders the Art. 53 asymmetric table…` (no pay; MAY-deduct ×2; MUST NOT ×2) |
+| REQ-2/4 | CSJ fundamento cited for prima/intereses | same test — `Art. 53 CST + CSJ` ×2 + CSJ text assertion |
+| REQ-2/5 | Incapacidad/licencia count as worked time | `marks incapacidad médica y licencia as special…` + exception callout in table test |
+| REQ-3/6 | All ten options are selectable | `exposes exactly 10 selectable causal options…` |
+| REQ-3/7 | Special causales selectable alongside Art. 51 | same test — values + special labels |
+| REQ-4/8 | Adding a period persists it | `adds a period, renders it and persists it under nomina-clara-suspensiones` |
+| REQ-4/9 | End date before start date is rejected | `rejects an end date before the start date…` (alert + not persisted) |
+| REQ-4/10 | Editing updates the persisted record | `edits an existing record and replaces the stored one` |
+| REQ-4/11 | Deleting removes the record | `deletes a record and removes it from the list and from localStorage` |
+| REQ-5/12 | Standard checklist text for standard causales | `shows the standard checklist for a standard Art. 51 causal` |
+| REQ-5/13 | Special checklist text for incapacidad/licencia | `shows the special checklist for incapacidad/licencia…` |
+| REQ-6/14 | First suspension of exactly 8 days → no warning | `does NOT warn on a first suspension of exactly 8 days` |
+| REQ-6/15 | First suspension of 9 days → warning | `warns on a first suspension of 9 days (threshold 8)` |
+| REQ-6/16 | Reincidencia of exactly 60 days → no warning | `does NOT warn on a reincidencia of exactly 60 days` |
+| REQ-6/17 | Reincidencia of 61 days → warning | `warns on a reincidencia of 61 days (threshold 60)` |
+| REQ-6/18 | Non-disciplinary causales never trigger the field | `hides the Art. 112 field for …` (9 `it.each` cases) + `never warns for non-disciplinary causales` |
+
+Plus design-required component coverage: D11 blocked submit (`blocks submit without an explicit first/reincidencia answer…`), field rendered for `suspension-disciplinaria`, `buildExcessWarning` exported-helper boundary tests (5 direct cases), D3 `loadSuspensionStore` version-mismatch/corrupted-JSON gate, persistence-on-mount (seeded localStorage), DOM ordering below `IndemnizacionSection`, and no-label-collision regression.
+
+## Verification (PR3 slice)
+
+| Check | Command | Result |
+|-------|---------|--------|
+| Focused 3.1 | `npx vitest run src/pages/LiquidacionPage/__tests__/SuspensionSection.test.tsx` | 33/33 passed, exit 0 → `/tmp/opencode/vitest-pr3-suspensionsection.log` |
+| RED 3.3 (pre-wiring) | `npx vitest run src/pages/LiquidacionPage/__tests__/LiquidacionPage.test.tsx` | 2 failed / 10 passed (third section missing + label collisions) → `/tmp/opencode/vitest-pr3-page-red.log` |
+| GREEN 3.2/3.3 | focused run of the 3 LiquidacionPage test files | 54/54 passed, exit 0 → `/tmp/opencode/vitest-pr3-page-green.log` |
+| Full suite | `npx vitest run` | 17 files / 337 tests passed (301 baseline + 36 new), exit 0 → `/tmp/opencode/vitest-pr3.log` |
+| Typecheck | `npx tsc --noEmit` | exit 0 → `/tmp/opencode/vitest-pr3-tsc.log` |
+| Build | `npx vite build` | built in 3.99s, exit 0 → `/tmp/opencode/vitest-pr3-build.log` |
+
+## Notes / risks
+
+- **Flake observed (pre-existing, not caused by this change)**: the `LiquidacionPage — navigation › navigates from the Header NavLink…` test (existing) failed ONCE during the first full-suite run immediately after the new 380-line test file was created (first-run transform contention vs the default 1000ms `findByRole` window). It passed in isolation (1.38s), passed in the interrupted run (799ms), and passed in the final clean full run (337/337). No test or production change was made for it; verify should be aware it is load-sensitive on this machine.
+
+## Status
+PR1 (0.1–1.4) + PR2 (2.1–2.4) + PR3 (3.1–3.4): **14/14 complete**. All green. Remaining: Phase 4 docs+commits (4.1–4.3) — out of PR3 slice; commits pending orchestrator native review. Ready for verify.
