@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-01T23:41:04Z",
+  "title": "Design System: Nómina Clara",
+  "extensions": {
+    "colorMeta": {
+      "azul-clara": { "role": "primary", "displayName": "Azul Clara", "canonical": "#2563eb", "tonalRamp": ["#172554", "#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe"] },
+      "azul-clara-bright": { "role": "primary", "displayName": "Azul Clara Bright (dark)", "canonical": "#60a5fa", "tonalRamp": ["#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#dbeafe"] },
+      "azul-clara-dark-surface": { "role": "primary", "displayName": "Azul Clara Dark Surface", "canonical": "#93c5fd", "tonalRamp": ["#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#dbeafe"] },
+      "tinta": { "role": "neutral", "displayName": "Tinta", "canonical": "#1a1a2e", "tonalRamp": ["#0f172a", "#1a1a2e", "#334155", "#475569", "#4b5563", "#6b7280", "#94a3b8", "#e2e8f0"] },
+      "tinta-nota": { "role": "neutral", "displayName": "Tinta Nota", "canonical": "#4b5563", "tonalRamp": ["#0f172a", "#1a1a2e", "#334155", "#475569", "#4b5563", "#6b7280", "#94a3b8", "#e2e8f0"] },
+      "tinta-suave": { "role": "neutral", "displayName": "Tinta Suave", "canonical": "#6b7280", "tonalRamp": ["#0f172a", "#1a1a2e", "#334155", "#475569", "#4b5563", "#6b7280", "#94a3b8", "#e2e8f0"] },
+      "fondo": { "role": "neutral", "displayName": "Fondo", "canonical": "#f0f2f5", "tonalRamp": ["#0f172a", "#1e293b", "#334155", "#64748b", "#94a3b8", "#cbd5e1", "#e5e7eb", "#f0f2f5"] },
+      "superficie": { "role": "neutral", "displayName": "Superficie", "canonical": "#ffffff", "tonalRamp": ["#0f172a", "#1e293b", "#253349", "#334155", "#64748b", "#94a3b8", "#e5e7eb", "#ffffff"] },
+      "verde-pago": { "role": "success", "displayName": "Verde Pago", "canonical": "#10b981", "tonalRamp": ["#064e3b", "#065f46", "#047857", "#059669", "#10b981", "#34d399", "#6ee7b7", "#d1fae5"] },
+      "rojo-reclamo": { "role": "danger", "displayName": "Rojo Reclamo", "canonical": "#dc2626", "tonalRamp": ["#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fca5a5", "#fee2e2"] },
+      "ambar-aviso": { "role": "warning", "displayName": "Ámbar Aviso", "canonical": "#f59e0b", "tonalRamp": ["#78350f", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fde68a", "#fef3c7"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "h1 de página — Calculadora, Comparar, Liquidación." },
+      "headline": { "displayName": "Headline", "purpose": "h2 dentro de tarjetas, con borde inferior." },
+      "title": { "displayName": "Title", "purpose": "h3 — secciones dentro de página." },
+      "body": { "displayName": "Body", "purpose": "Texto base y párrafos educativos." },
+      "label": { "displayName": "Label", "purpose": "Etiquetas de campo, botones, headers de tabla." },
+      "mono": { "displayName": "Mono", "purpose": "Montos monetarios (formatCOP) y medidas." }
+    },
+    "shadows": [
+      { "name": "ambient-low", "value": "0 1px 2px rgba(0, 0, 0, 0.05)", "purpose": "Hover sutil, superficies planas." },
+      { "name": "ambient", "value": "0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04)", "purpose": "Tarjetas en reposo." },
+      { "name": "lifted", "value": "0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04)", "purpose": "Elementos elevados — menú móvil, diálogo, tooltip." },
+      { "name": "lifted-x", "value": "0 8px 24px rgba(0, 0, 0, 0.1)", "purpose": "Diálogos y overlays superiores." }
+    ],
+    "motion": [
+      { "name": "ease-state", "value": "0.2s ease", "purpose": "Transiciones de estado (hover, foco, color)." },
+      { "name": "ease-drawer", "value": "0.3s ease", "purpose": "Apertura/cierre del drawer móvil y transformaciones." },
+      { "name": "ease-theme", "value": "0.3s ease", "purpose": "Cambio de tema (background/color del body)." }
+    ],
+    "breakpoints": [
+      { "name": "tablet", "value": "640px" },
+      { "name": "desktop", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal — Calcular, Registrar, Guardar.",
+      "html": "<button class=\"ds-btn-primary\">Registrar suspensión</button>",
+      "css": ".ds-btn-primary { background: #2563eb; color: #fff; padding: 12px 24px; border: 1px solid transparent; border-radius: 8px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; } .ds-btn-primary:hover { background: #1d4ed8; } .ds-btn-primary:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; } .ds-btn-primary:active { transform: translateY(1px); } [data-theme=\"dark\"] .ds-btn-primary { background: #93c5fd; color: #0f172a; } [data-theme=\"dark\"] .ds-btn-primary:hover { background: #7aa7e8; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Acción secundaria — Cancelar, limpiar.",
+      "html": "<button class=\"ds-btn-secondary\">Cancelar</button>",
+      "css": ".ds-btn-secondary { background: transparent; color: #1a1a2e; padding: 12px 24px; border: 1px solid #e5e7eb; border-radius: 8px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; } .ds-btn-secondary:hover { background: #f8fafc; border-color: #4b5563; } .ds-btn-secondary:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; } [data-theme=\"dark\"] .ds-btn-secondary { color: #e2e8f0; border-color: #334155; } [data-theme=\"dark\"] .ds-btn-secondary:hover { background: #253349; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Acción destructiva — Eliminar registro.",
+      "html": "<button class=\"ds-btn-danger\">Eliminar</button>",
+      "css": ".ds-btn-danger { background: #dc2626; color: #fff; padding: 12px 24px; border: none; border-radius: 8px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s ease; } .ds-btn-danger:hover { opacity: 0.9; } .ds-btn-danger:focus-visible { outline: 2px solid #dc2626; outline-offset: 2px; } [data-theme=\"dark\"] .ds-btn-danger { background: #dc2626; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo de texto/número con borde fuerte AA.",
+      "html": "<label class=\"ds-field-label\" for=\"ds-input\">Salario base</label><input class=\"ds-input\" id=\"ds-input\" type=\"number\" placeholder=\"1.300.000\" />",
+      "css": ".ds-field-label { display: block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; } .ds-input { width: 100%; padding: 12px 16px; font-size: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; color: #1a1a2e; background: #ffffff; border: 1px solid #949494; border-radius: 8px; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; box-sizing: border-box; } .ds-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px #dbeafe; } .ds-input::placeholder { color: #6b7280; } [data-theme=\"dark\"] .ds-field-label { color: #e2e8f0; } [data-theme=\"dark\"] .ds-input { color: #e2e8f0; background: #1e293b; border-color: #64748b; } [data-theme=\"dark\"] .ds-input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #1e3a5f; } [data-theme=\"dark\"] .ds-input::placeholder { color: #8494a8; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Contenedor de sección con sombra ambient.",
+      "html": "<div class=\"ds-card\"><h2 class=\"ds-card-title\">Prestaciones</h2><p class=\"ds-card-body\">Detalle de cesantías, prima e intereses.</p></div>",
+      "css": ".ds-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04); } .ds-card-title { margin: 0 0 20px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 20px; font-weight: 600; color: #1a1a2e; } .ds-card-body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a2e; } [data-theme=\"dark\"] .ds-card { background: #1e293b; border-color: #334155; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); } [data-theme=\"dark\"] .ds-card-title { color: #e2e8f0; border-bottom-color: #334155; } [data-theme=\"dark\"] .ds-card-body { color: #e2e8f0; }"
+    },
+    {
+      "name": "Badge Success",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Etiqueta de estado — cuenta como tiempo trabajado.",
+      "html": "<span class=\"ds-badge\">Cuenta como tiempo trabajado</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 4px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 12px; font-weight: 600; border-radius: 9999px; background: #d1fae5; color: #065f46; } [data-theme=\"dark\"] .ds-badge { background: #064e3b; color: #a7f3d0; }"
+    },
+    {
+      "name": "Navbar Link",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Enlace de navegación con estado activo.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link\" href=\"#\">Calculadora</a><a class=\"ds-nav-link ds-nav-active\" href=\"#\">Comparar</a></nav>",
+      "css": ".ds-nav { display: flex; gap: 4px; } .ds-nav-link { padding: 8px 16px; border-radius: 8px; color: #4b5563; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; font-weight: 500; text-decoration: none; transition: background-color 0.2s ease, color 0.2s ease; } .ds-nav-link:hover { background: #f8fafc; color: #1a1a2e; } .ds-nav-link:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; } .ds-nav-active { background: #dbeafe; color: #1d4ed8; } [data-theme=\"dark\"] .ds-nav-link { color: #94a3b8; } [data-theme=\"dark\"] .ds-nav-link:hover { background: #253349; color: #e2e8f0; } [data-theme=\"dark\"] .ds-nav-active { background: #1e3a5f; color: #93c5fd; }"
+    },
+    {
+      "name": "Warning Alert",
+      "kind": "card",
+      "refersTo": "alert-warning",
+      "description": "Aviso de límite legal (Art. 112 CST).",
+      "html": "<p class=\"ds-alert-warning\" role=\"alert\">Esta suspensión disciplinaria excede el límite de 8 días del Art. 112 CST.</p>",
+      "css": ".ds-alert-warning { padding: 16px; border-radius: 8px; border: 1px solid #f59e0b; background: #fef3c7; color: #92400e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.5; margin: 16px 0; } [data-theme=\"dark\"] .ds-alert-warning { border-color: #fbbf24; background: #78350f; color: #fde68a; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La Ventana Transparente",
+    "overview": "Nómina Clara es una ventana a través de la cual el trabajador colombiano ve su pago con la ley a la vista: cada número muestra su fórmula y su referencia legal, y la interfaz existe para que esa verificación sea posible. El sistema visual es sobrio y orientado a datos — claridad profesional, como un documento legal bien redactado — donde el color se reserva para acción y estado, nunca para decoración. La densidad es media: formularios claros, tablas legibles, tarjetas que agrupan sin competir. La jerarquía tipográfica es discreta (un sistema de pesos y tamaños, no una escala expresiva). El ritmo espacial es generoso y consistente (escala de 4px). El sistema soporta dos temas completos — claro y oscuro — que remapean roles semánticos en lugar de invertir mecánicamente, y prioriza accesibilidad AA: contraste verificado por pares calculados, foco visible, navegación por teclado y soporte de prefers-reduced-motion.",
+    "keyCharacteristics": [
+      "Claridad sobria: acción, selección, estado y lectura compiten por jerarquía; la decoración no compite.",
+      "Transparencia estructural: los datos legales (citas, fórmulas, referencias) se presentan tan legibles como los resultados.",
+      "Tokens de doble tema: cada rol tiene un par claro/oscuro deliberado, no una inversión.",
+      "Predecible y confiable: botones, inputs y tarjetas se comportan de forma consistente en toda la app."
+    ],
+    "rules": [
+      { "name": "La Regla del Rol Único", "body": "El azul es para acción, selección y foco. Nunca para decoración, subtítulos o bordes de tarjeta. Si algo no es accionable, no es azul.", "section": "colors" },
+      { "name": "La Regla del Par Verificable", "body": "Todo color de estado se define como par fondo+texto con contraste AA verificado por tema; nunca se usa el color puro como texto sobre superficie (fallaría 1.4.3).", "section": "colors" },
+      { "name": "La Regla del Dinero en Mono", "body": "Todo monto se formatea con formatCOP() y se muestra en la pila mono; nunca en sans. El dinero se reconoce por su forma tipográfica.", "section": "typography" },
+      { "name": "La Regla Plana-en-Reposo", "body": "Las superficies son planas en reposo; la sombra aparece como respuesta a estado o jerarquía, nunca por defecto generalizado.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar tokens CSS de :root / [data-theme=\"dark\"] para todo color, radio y sombra — nunca hex suelto fuera de la definición del token.",
+      "Do verificar contraste AA por par calculado al tocar colores (texto ≥4.5, límites de control ≥3).",
+      "Do mostrar fórmulas y citas legales junto a cada resultado — es el producto.",
+      "Do mantener el focus visible (borde azul + ring) en todos los controles.",
+      "Do conservar los pares de estado dedicados (fondo+texto) por tema.",
+      "Do usar role=\"alert\" para errores y role=\"note\" para avisos informativos."
+    ],
+    "donts": [
+      "Don't usar el color puro de éxito/peligro/aviso como texto sobre superficie (falla 1.4.3) — usa el par *-text.",
+      "Don't inventar citas legales o cambiar la postura \"educativo, no asesoría legal\".",
+      "Don't aplicar el azul a elementos no accionables.",
+      "Don't usar transition: all — transiciona propiedades específicas.",
+      "Don't renderizar montos fuera de la pila mono con formatCOP().",
+      "Don't tocar los límites de 44px de touch targets en móvil."
+    ]
+  }
+}
