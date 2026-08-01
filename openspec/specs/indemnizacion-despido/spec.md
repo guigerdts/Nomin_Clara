@@ -1,14 +1,14 @@
-# Delta for Indemnización por Despido
+# Indemnización por Despido Sin Justa Causa Specification
 
-## Change
+## Purpose
 
-Adds the `indemnizacion-despido` capability (Art. 64 CST): gate + three calculators (fijo, indefinido, obra) below prestaciones, Art. 46 CST notices.
+Computes the indemnización por despido sin justa causa (Art. 64 CST) for the three contract types — término fijo, término indefinido, and obra o labor — below the prestaciones grid on the `/liquidacion` view, with Art. 46 CST renewal notices and educational advisory content.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Termination qualifier gate (Art. 64 CST)
 
-MUST expose a radio with four options: "Despido sin justa causa", "Renuncia", "Mutuo acuerdo", "Despido con justa causa comprobada". Only "Despido sin justa causa" MUST enable inputs and results; the other three MUST show a visible warning (no such right, Art. 64 CST) and MUST NOT calculate.
+The system MUST expose a radio with four options: "Despido sin justa causa", "Renuncia", "Mutuo acuerdo", "Despido con justa causa comprobada". Only "Despido sin justa causa" MUST enable inputs and results; the other three MUST show a visible warning (no such right, Art. 64 CST) and MUST NOT calculate.
 
 GIVEN|WHEN|THEN
 ---|---|--
@@ -57,7 +57,7 @@ the section renders in /liquidacion|rendering|prestaciones results unchanged
 
 ### Requirement: Educational content (Art. 46 CST, advisory)
 
-MAY display the Art. 46 CST renewal notice; warnings for Renuncia / Mutuo acuerdo / Despido con justa causa comprobada; and a footnote that variable-income workers (commissions, habitual overtime) may be entitled to a last-year-average base per Corte Suprema doctrine. Footnote MUST NOT trigger a calculation (out of scope).
+The system MAY display the Art. 46 CST renewal notice; warnings for Renuncia / Mutuo acuerdo / Despido con justa causa comprobada; and a footnote that variable-income workers (commissions, habitual overtime) may be entitled to a last-year-average base per Corte Suprema doctrine. Footnote MUST NOT trigger a calculation (out of scope).
 
 GIVEN|WHEN|THEN
 ---|---|--
