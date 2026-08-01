@@ -116,3 +116,29 @@ export interface DraftQuincena {
 }
 
 export type Theme = 'light' | 'dark';
+
+export interface LiquidacionInputs {
+  startDate: string;
+  endDate: string;
+  salary: number;
+  daysTaken: number;
+}
+
+export interface ConceptLine {
+  concepto: string;
+  formula: string;
+  legalRef: string;
+  amount: number;
+  warning?: string;
+}
+
+export interface LiquidacionResult {
+  inputs: LiquidacionInputs;
+  auxilio: number;
+  appliesTransport: boolean;
+  days: number;
+  semester: 1 | 2;
+  semesterDays: number;
+  lines: ConceptLine[];
+  total: number;
+}
