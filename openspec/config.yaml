@@ -4,7 +4,7 @@ schema: spec-driven
 context: |
   Tech stack: React 18 + TypeScript (strict) + Vite 5 + Vitest 2
   Architecture: SPA client-side, no backend, CSS Modules + global CSS custom properties
-  Testing: Vitest with jsdom, @testing-library/react, 13 test files (254 tests passing)
+  Testing: Vitest with jsdom, @testing-library/react, 14 test files (268 tests passing)
   Style: CSS Modules per component, global.css for theme vars, responsive
   Strict TDD: true (Vitest available and in active use)
 
