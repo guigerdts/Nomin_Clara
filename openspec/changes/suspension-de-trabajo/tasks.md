@@ -40,10 +40,10 @@ Out of scope: `liquidacion.ts` integration (no pesos); `LiquidacionPage.module.c
 
 ## Phase 2: Section UI
 
-- [ ] 2.1 Create `SuspensionSection.tsx`: Art. 51 causales list, Art. 53 asymmetric table + CSJ fundamento + exception callout; OFFICIAL_LINKS hrefs verbatim (REQ-1/2)
-- [ ] 2.2 Create `SuspensionSection.module.css` (IndemnizacionSection pattern)
-- [ ] 2.3 Registry: 10-causal selector, dates, full CRUD, persistence key `nomina-clara-suspensiones` (REQ-3/4)
-- [ ] 2.4 D11: disciplinaria → `isFirstDisciplinary` REQUIRED (submit blocked), hidden for other 9; per-record checklist + excess warning 8/60 (REQ-5/6)
+- [x] 2.1 Create `SuspensionSection.tsx`: Art. 51 causales list, Art. 53 asymmetric table + CSJ fundamento + exception callout; OFFICIAL_LINKS hrefs verbatim (REQ-1/2)
+- [x] 2.2 Create `SuspensionSection.module.css` (IndemnizacionSection pattern)
+- [x] 2.3 Registry: 10-causal selector, dates, full CRUD, persistence key `nomina-clara-suspensiones` (REQ-3/4)
+- [x] 2.4 D11: disciplinaria → `isFirstDisciplinary` REQUIRED (submit blocked), hidden for other 9; per-record checklist + excess warning 8/60 (REQ-5/6)
 
 ## Phase 3: Component tests + integration
 
