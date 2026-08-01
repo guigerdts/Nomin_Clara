@@ -191,3 +191,36 @@ export interface IndemnizacionResult {
   notices: IndemnizacionNotice[];
   total: number;
 }
+
+/**
+ * Suspensión del contrato de trabajo (CST Arts. 51 y 53).
+ * Tracking-only module — no peso calculation.
+ */
+
+/** 10 selectable causales: 8 from Art. 51 CST plus 2 special cases (D1). */
+export type SuspensionCausal =
+  | 'fuerza-mayor'
+  | 'muerte-empleador'
+  | 'suspension-actividades'
+  | 'licencia-acordada'
+  | 'suspension-disciplinaria'
+  | 'detencion-preventiva'
+  | 'arresto-correccional'
+  | 'huelga'
+  | 'incapacidad-medica'
+  | 'licencia-maternidad-paternidad';
+
+/** A logged suspension period. `isFirstDisciplinary` optional at type level (D11) — defensive fallback only. */
+export interface SuspensionRecord {
+  id: string;
+  startDate: string;
+  endDate: string;
+  causal: SuspensionCausal;
+  isFirstDisciplinary?: boolean;
+}
+
+/** Persistence shape: `{ version: 1, records }`; version mismatch → empty. */
+export interface SuspensionStore {
+  version: 1;
+  records: SuspensionRecord[];
+}
