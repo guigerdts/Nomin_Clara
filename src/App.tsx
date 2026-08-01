@@ -15,8 +15,9 @@ const SuspenseFallback = (
 function App() {
   return (
     <BrowserRouter>
+      <a href="#main-content" className="skip-link">Saltar al contenido</a>
       <Header />
-      <main className="container">
+      <main id="main-content" className="container">
         <Routes>
           <Route path="/" element={<CalculatorPage />} />
           <Route path="/compare" element={
