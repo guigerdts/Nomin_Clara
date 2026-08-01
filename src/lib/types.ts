@@ -142,3 +142,52 @@ export interface LiquidacionResult {
   lines: ConceptLine[];
   total: number;
 }
+
+export type IndemnizacionContractType = 'fijo' | 'indefinido' | 'obra';
+
+export interface IndemnizacionFijoInputs {
+  type: 'fijo';
+  salary: number;
+  startDate: string;
+  plannedEnd: string;
+  dismissalDate: string;
+  renewals: number;
+}
+
+export interface IndemnizacionIndefinidoInputs {
+  type: 'indefinido';
+  salary: number;
+  serviceStart: string;
+  dismissalDate: string;
+}
+
+export interface IndemnizacionObraInputs {
+  type: 'obra';
+  salary: number;
+  startDate: string;
+  plannedEnd: string;
+  dismissalDate: string;
+}
+
+export type IndemnizacionInputs =
+  | IndemnizacionFijoInputs
+  | IndemnizacionIndefinidoInputs
+  | IndemnizacionObraInputs;
+
+export interface IndemnizacionNotice {
+  text: string;
+  legalRef: string;
+}
+
+export interface IndemnizacionResult {
+  inputs: IndemnizacionInputs;
+  type: IndemnizacionContractType;
+  days: number;
+  effectiveDays: number;
+  years?: number;
+  branch?: 'low' | 'high';
+  threshold?: number;
+  lines: ConceptLine[];
+  notices: IndemnizacionNotice[];
+  total: number;
+}
