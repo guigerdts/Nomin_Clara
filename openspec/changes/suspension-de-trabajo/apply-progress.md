@@ -71,3 +71,57 @@ Plus design-required unit coverage: `getDisciplinaryThreshold` (8/60), `getDurat
 
 ## Status
 PR1 tasks 0.1–1.4: **6/6 complete**. All green. Ready for next batch (PR2 UI) / verify.
+
+---
+
+# PR2 Slice — tasks 2.1–2.4 (section UI + registry + D11)
+
+**Branch**: `suspension/pr2-ui` (based on PR1 commit `58f3bbd`)
+**Slice**: PR2 — `SuspensionSection.tsx` + `.module.css` (educational content, registry CRUD, D11). NO component tests (PR3, tasks 3.1–3.3), NO `LiquidacionPage.tsx` wiring (PR3, task 3.2).
+**Mode**: STRICT TDD — component tests are PR3 scope per orchestrator slice boundary; the PR2 verification gate defined by tasks.md Unit 2 is `npx tsc --noEmit` (+ `npx vite dev` browser harness). Full suite + build run as regression safety net.
+
+## RED → GREEN Table (PR2)
+
+| Task | RED (test written first) | GREEN (impl passes) | Evidence |
+|------|--------------------------|---------------------|----------|
+| 2.1 `SuspensionSection.tsx` educational content | ➖ Deferred to PR3 (task 3.1 component tests) | ✅ tsc 0 + pipeline build 0 | 10-causal list (REQ-1 incl. special badge), Art. 53 asymmetric table + CSJ fundamento note + exception callout (REQ-2), OFFICIAL_LINKS hrefs verbatim (D10) |
+| 2.2 `SuspensionSection.module.css` | N/A (structural stylesheet) | ✅ compiled via pipeline | throwaway-entry vite build transformed the `.module.css` (16 modules, exit 0); IndemnizacionSection token pattern |
+| 2.3 Registry CRUD + persistence | ➖ Deferred to PR3 (task 3.1 CRUD/persistence tests) | ✅ tsc 0 | `STORAGE_KEY 'nomina-clara-suspensiones'`; `loadSuspensionStore` (lazy try/catch, version gate → empty); add/edit/delete persist-on-mutation (useDraftQuincena pattern, D9); `isValidPeriod` rejects end < start with `role="alert"` error |
+| 2.4 D11 two-layer contract | ➖ Deferred to PR3 (task 3.1 blocked-submit test) | ✅ tsc 0 | Field rendered ONLY for `suspension-disciplinaria`; submit blocked + error when unanswered; `buildExcessWarning` (pure export) via `shouldShowExcessWarning` (8/9, 60/61 boundaries); field hidden for the other 9 causales; per-record `buildChecklist` standard/special |
+
+## TDD Cycle Evidence (Strict TDD — PR2)
+
+| Task | Test File | Layer | Safety Net | RED | GREEN | TRIANGULATE | REFACTOR |
+|------|-----------|-------|------------|-----|-------|-------------|----------|
+| 2.1 | N/A — `__tests__/SuspensionSection.test.tsx` is PR3 (task 3.1) | Integration (PR3) | ✅ 16 files / 301 tests | ➖ Deferred by slice boundary | ✅ tsc exit 0; pipeline build 16 modules | ➖ PR3 (10 options, Art. 53 table scenarios) | ➖ None needed |
+| 2.2 | N/A (CSS, structural) | N/A | ✅ 301 tests | ➖ Structural | ✅ vite pipeline compiled `.module.css` | ➖ Triangulation skipped: purely structural stylesheet | ➖ None needed |
+| 2.3 | N/A — CRUD/persistence tests are PR3 (3.1) | Integration (PR3) | ✅ 301 tests | ➖ Deferred by slice boundary | ✅ tsc exit 0; `loadSuspensionStore` pure-exported for PR3 unit tests | ➖ PR3 (add/edit/delete/persist scenarios) | ➖ None needed |
+| 2.4 | N/A — D11 blocked-submit test is PR3 (3.1) | Integration (PR3) | ✅ 301 tests | ➖ Deferred by slice boundary | ✅ tsc exit 0; `buildExcessWarning` pure-exported | ➖ PR3 (8/9/60/61 boundary scenarios) | ➖ None needed |
+
+> **TDD note (documented deviation, not silent fallback)**: strict-tdd.md's Hard Gate requires RED tests before production code. For this slice the orchestrator explicitly carved component tests OUT of PR2 (tasks 3.1–3.3 belong to PR3) and tasks.md Unit 2 defines PR2's focused command as `npx tsc --noEmit`. RED evidence is therefore deferred by slice boundary — task 3.1 writes the RED tests against this exact component API (labels, roles, exported helpers). This deviation is recorded here and in the apply return summary so verify can reconcile.
+
+## Work Unit Evidence (PR2 slice)
+
+| Evidence | Required value |
+|----------|----------------|
+| Focused test command + exact result | `npx tsc --noEmit` → exit 0 (`/tmp/opencode/vitest-pr2-tsc.log`); focused `npx vitest run src/lib/__tests__/suspension.test.ts` → 23/23, exit 0 (`/tmp/opencode/vitest-pr2-focused.log`) |
+| Runtime harness command/scenario + result | `npx vite build` → built in 4.16s, exit 0 (`/tmp/opencode/vitest-pr2-build.log`); new-module pipeline check via throwaway entry → 16 modules transformed, exit 0 (`/tmp/opencode/vitest-pr2-csscheck.log`). Browser harness N/A for headless apply — `npx vite dev` manual check belongs to PR3 wiring per tasks.md Unit 2 |
+| Rollback boundary | Delete `src/pages/LiquidacionPage/SuspensionSection.tsx` + `SuspensionSection.module.css`; nothing else touched (`LiquidacionPage.tsx` unmodified — PR3 scope). Apply-progress rows are inert docs |
+
+## Verification (PR2 slice)
+
+| Check | Command | Result |
+|-------|---------|--------|
+| Typecheck | `npx tsc --noEmit` | exit 0 → `/tmp/opencode/vitest-pr2-tsc.log` |
+| Focused PR1 suite | `npx vitest run src/lib/__tests__/suspension.test.ts` | 23/23 passed, exit 0 → `/tmp/opencode/vitest-pr2-focused.log` |
+| Full suite | `npx vitest run` | 16 files / 301 tests passed, exit 0 → `/tmp/opencode/vitest-pr2-full.log` |
+| Build | `npx vite build` | built in 4.16s, exit 0 → `/tmp/opencode/vitest-pr2-build.log` |
+| New-module pipeline | throwaway-entry `vite build --config vite.config.check.ts` | 16 modules transformed, exit 0 → `/tmp/opencode/vitest-pr2-csscheck.log` (throwaway files removed after check) |
+
+## Open items carried to PR3 / verify
+
+- CSJ jurisprudencia wording for the prima/intereses row: design.md Open Question — pinned generically at institutional level ("CSJ, Sala de Casación Laboral") without fabricating a radicado; exact wording/radicado to be pinned from the product brief before verify.
+- Component tests (tasks 3.1, 3.3) and page wiring (task 3.2) are the next slice (PR3).
+
+## Status
+PR1 (0.1–1.4) + PR2 (2.1–2.4): **10/10 complete**. All green. Ready for PR3 (component tests + wiring).
