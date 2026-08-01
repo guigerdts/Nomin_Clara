@@ -4,6 +4,7 @@ import { SMMLV, formatCOP, getTransportAllowance } from '../../lib/rates';
 import { calculateLiquidacion, formatCOPExact } from '../../lib/liquidacion';
 import type { LiquidacionResult } from '../../lib/types';
 import styles from './LiquidacionPage.module.css';
+import { IndemnizacionSection } from './IndemnizacionSection';
 
 const FULL_MONTHS = [
   'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
@@ -209,6 +210,8 @@ export function LiquidacionPage() {
           </div>
         </section>
       </div>
+
+      <IndemnizacionSection />
     </div>
   );
 }
