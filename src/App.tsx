@@ -6,6 +6,11 @@ import { ToastContainer } from './components/Toast';
 import { CalculatorPage } from './pages/CalculatorPage/CalculatorPage';
 
 const ComparePage = lazy(() => import('./pages/ComparePage/ComparePage').then(m => ({ default: m.ComparePage })));
+const LiquidacionPage = lazy(() => import('./pages/LiquidacionPage/LiquidacionPage').then(m => ({ default: m.LiquidacionPage })));
+
+const SuspenseFallback = (
+  <div className="container" style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>Cargando...</div>
+);
 
 function App() {
   return (
@@ -15,8 +20,13 @@ function App() {
         <Routes>
           <Route path="/" element={<CalculatorPage />} />
           <Route path="/compare" element={
-            <Suspense fallback={<div className="container" style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>Cargando...</div>}>
+            <Suspense fallback={SuspenseFallback}>
               <ComparePage />
+            </Suspense>
+          } />
+          <Route path="/liquidacion" element={
+            <Suspense fallback={SuspenseFallback}>
+              <LiquidacionPage />
             </Suspense>
           } />
         </Routes>

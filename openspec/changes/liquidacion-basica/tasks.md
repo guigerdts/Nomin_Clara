@@ -39,13 +39,13 @@ Chain strategy: stacked-to-main
 
 ## Phase 3: Integration (page + routing)
 
-- [ ] 3.1 Create `src/pages/LiquidacionPage/LiquidacionPage.tsx`: form (start/end/salario/días disfrutados), local `useState`, ConceptLine rows with formula + legalRef (GlosarioRecargos pattern)
-- [ ] 3.2 Create `LiquidacionPage.module.css`: reuse global tokens (`.card`, `.badge`, `.alert-warning`, `.monetary`) + local `.formula`/`.cita`/`.pct`
-- [ ] 3.3 Add lazy route `/liquidacion` in `src/App.tsx` (Suspense fallback same as `/compare`) + NavLink "Liquidación" in `src/components/Header.tsx`
-- [ ] 3.4 Add fixed non-editable worked example card (01-ene→31-jul-2026, salario $1.750.905; pinned $1.166.666,67 / $81.666,67 / $166.666,67 / $510.680,63)
+- [x] 3.1 Create `src/pages/LiquidacionPage/LiquidacionPage.tsx`: form (start/end/salario/días disfrutados), local `useState`, ConceptLine rows with formula + legalRef (GlosarioRecargos pattern)
+- [x] 3.2 Create `LiquidacionPage.module.css`: reuse global tokens (`.card`, `.badge`, `.alert-warning`, `.monetary`) + local `.formula`/`.cita`/`.pct`
+- [x] 3.3 Add lazy route `/liquidacion` in `src/App.tsx` (Suspense fallback same as `/compare`) + NavLink "Liquidación" in `src/components/Header.tsx`
+- [x] 3.4 Add fixed non-editable worked example card (01-ene→31-jul-2026, salario $1.750.905; pinned $1.166.666,67 / $81.666,67 / $166.666,67 / $510.680,63)
 
 ## Phase 4: Testing / Verification
 
-- [ ] 4.1 Create `LiquidacionPage/__tests__/LiquidacionPage.test.tsx` (RTL + BrowserRouter): form→calculate→render shows concepto/formula/cita per line, auxilio badge, both warnings, example card non-editable; NavLink → `/liquidacion`
-- [ ] 4.2 Run `npx vitest run` — full suite green (existing 66 + new)
-- [ ] 4.3 Run `npx tsc --noEmit && npx vite build` — build green
+- [x] 4.1 Create `LiquidacionPage/__tests__/LiquidacionPage.test.tsx` (RTL + BrowserRouter): form→calculate→render shows concepto/formula/cita per line, auxilio badge, both warnings, example card non-editable; NavLink → `/liquidacion` (test pre-existed as the UI contract; import depth fixed: `../../` → `../../../`)
+- [x] 4.2 Run `npx vitest run` — full suite green (13 files, 254 passed: 246 baseline + 8 new LiquidacionPage)
+- [x] 4.3 Run `npx tsc --noEmit && npx vite build` — build green

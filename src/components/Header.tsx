@@ -52,6 +52,15 @@ export function Header() {
           >
             Comparar
           </NavLink>
+          <NavLink
+            to="/liquidacion"
+            className={({ isActive }) =>
+              `${styles.navLink}${isActive ? ` ${styles.active}` : ''}`
+            }
+            onClick={closeMenu}
+          >
+            Liquidación
+          </NavLink>
           <button
             id="theme-toggle-mobile"
             className={styles.themeToggleMobile}
