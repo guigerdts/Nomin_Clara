@@ -289,4 +289,3 @@ The module SHALL export:
 - No user authentication
 - No multi-language support
 - No payroll withholding (health, pension, solidarity fund) calculations
-- No severance or vacation calculations
