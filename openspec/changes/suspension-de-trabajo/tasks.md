@@ -47,10 +47,10 @@ Out of scope: `liquidacion.ts` integration (no pesos); `LiquidacionPage.module.c
 
 ## Phase 3: Component tests + integration
 
-- [ ] 3.1 RED `__tests__/SuspensionSection.test.tsx`: 10 options; CRUD + persistence; D11 blocked submit; field hidden for 9 causales; warnings 8/9/60/61; checklist variants; Art. 53 table
-- [ ] 3.2 Modify `LiquidacionPage.tsx`: render `<SuspensionSection />` below `<IndemnizacionSection />`
-- [ ] 3.3 RED `__tests__/LiquidacionPage.test.tsx`: third section renders; prestaciones + indemnización unchanged; no label collisions
-- [ ] 3.4 Full `npx vitest run` (tee log) + `npx tsc --noEmit && npx vite build`
+- [x] 3.1 RED `__tests__/SuspensionSection.test.tsx`: 10 options; CRUD + persistence; D11 blocked submit; field hidden for 9 causales; warnings 8/9/60/61; checklist variants; Art. 53 table
+- [x] 3.2 Modify `LiquidacionPage.tsx`: render `<SuspensionSection />` below `<IndemnizacionSection />`
+- [x] 3.3 RED `__tests__/LiquidacionPage.test.tsx`: third section renders; prestaciones + indemnización unchanged; no label collisions
+- [x] 3.4 Full `npx vitest run` (tee log) + `npx tsc --noEmit && npx vite build`
 
 ## Phase 4: Docs + commits
 
