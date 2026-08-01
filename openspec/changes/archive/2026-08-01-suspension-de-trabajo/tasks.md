@@ -54,6 +54,8 @@ Out of scope: `liquidacion.ts` integration (no pesos); `LiquidacionPage.module.c
 
 ## Phase 4: Docs + commits
 
-- [ ] 4.1 Mark tasks `[x]` and finalize apply-progress.md RED→GREEN (per 0.1, during apply)
-- [ ] 4.2 Commit canonical spec `openspec/specs/suspension-de-trabajo/spec.md` as normal docs commit — never in review scope
-- [ ] 4.3 Commits per work-unit-commits: `feat(suspension): add pure suspension logic and tests` → `feat(suspension): add SuspensionSection UI and CRUD` → `feat(suspension): add component tests and page wiring`; no Co-Authored-By
+- [x] 4.1 Mark tasks `[x]` and finalize apply-progress.md RED→GREEN (per 0.1, during apply)
+- [x] 4.2 Commit canonical spec `openspec/specs/suspension-de-trabajo/spec.md` as normal docs commit — never in review scope
+- [x] 4.3 Commits per work-unit-commits: `feat(suspension): add pure suspension logic and tests` → `feat(suspension): add SuspensionSection UI and CRUD` → `feat(suspension): add component tests and page wiring`; no Co-Authored-By
+
+> **Archive-time reconciliation (4.1–4.3)**: checked at archive close per orchestrator instruction — formal marking belonged to this archive. Proof: 4.1 apply-progress.md RED→GREEN tables maintained during apply (PR1 6/6, PR2 10/10, PR3 14/14); 4.2 canonical spec committed `195c208` (ancestor of `origin/main`); 4.3 work-unit commits `115f5b5`/`d2b9402`/`2648d1e` exist with no Co-Authored-By. See `archive-report.md`.
