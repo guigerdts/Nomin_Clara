@@ -39,13 +39,13 @@ Out of scope: `LiquidacionPage.module.css` (D8); `liquidacion.ts`/`rates.ts` unc
 
 ## Phase 3: Integration — section UI + wiring
 
-- [ ] 3.1 Create `IndemnizacionSection.tsx`: gate radios (default "Despido sin justa causa"; b/c/d → warning, module NOT called), contractType default `'fijo'`, per-type inputs (renewals min 0 step 1; fijo anchors `dismissalDate`), ConceptLine results + notices + total, footnote
-- [ ] 3.2 Create `IndemnizacionSection.module.css`: reuse `.card`/`.alert-warning`/`.field-group` + local `.formula`/`.cita`/`.notice`
-- [ ] 3.3 Modify `LiquidacionPage.tsx`: render section below grid; prestaciones untouched
-- [ ] 3.4 Create `IndemnizacionSection.test.tsx`: gate b/c/d → warning, no result; fijo flow; renewals=4 → Art. 46 + "verifícalo con RR.HH."; defaults
+- [x] 3.1 Create `IndemnizacionSection.tsx`: gate radios (default "Despido sin justa causa"; b/c/d → warning, module NOT called), contractType default `'fijo'`, per-type inputs (renewals min 0 step 1; fijo anchors `dismissalDate`), ConceptLine results + notices + total, footnote
+- [x] 3.2 Create `IndemnizacionSection.module.css`: reuse `.card`/`.alert-warning`/`.field-group` + local `.formula`/`.cita`/`.notice`
+- [x] 3.3 Modify `LiquidacionPage.tsx`: render section below grid; prestaciones untouched
+- [x] 3.4 Create `IndemnizacionSection.test.tsx`: gate b/c/d → warning, no result; fijo flow; renewals=4 → Art. 46 + "verifícalo con RR.HH."; defaults
 
 ## Phase 4: Verification
 
-- [ ] 4.1 Modify `LiquidacionPage.test.tsx`: coexistence — prestaciones unchanged
-- [ ] 4.2 `npx vitest run` — full suite green (254 + new)
-- [ ] 4.3 `npx tsc --noEmit && npx vite build` — green
+- [x] 4.1 Modify `LiquidacionPage.test.tsx`: coexistence — prestaciones unchanged
+- [x] 4.2 `npx vitest run` — full suite green (268 baseline → 278 total)
+- [x] 4.3 `npx tsc --noEmit && npx vite build` — green
