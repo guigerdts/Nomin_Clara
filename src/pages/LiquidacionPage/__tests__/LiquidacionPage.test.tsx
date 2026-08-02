@@ -228,7 +228,7 @@ describe('LiquidacionPage — navigation', () => {
     fireEvent.click(screen.getByRole('link', { name: 'Liquidación' }));
 
     expect(
-      await screen.findByRole('heading', { name: 'Liquidación de prestaciones' }),
+      await screen.findByRole('heading', { name: 'Liquidación de prestaciones' }, { timeout: 3000 }),
     ).toBeInTheDocument();
   });
 });

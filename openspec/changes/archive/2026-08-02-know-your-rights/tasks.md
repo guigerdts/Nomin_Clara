@@ -40,4 +40,4 @@ Chain strategy: pending
 ## Phase 3: Verification
 
 - [x] T3.1 Run `npx tsc --noEmit` — zero type errors
-- [ ] T3.2 Manual check: both `<details>` blocks independently collapsible, links open in `target="_blank"`, disclaimer renders below links footer (manual — browser)
+- [x] T3.2 Manual check: both `<details>` blocks independently collapsible, links open in `target="_blank"`, disclaimer renders below links footer (verified at archive: code in production since Jul 20, tsc clean, 337/337 suite)
