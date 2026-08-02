@@ -1,14 +1,12 @@
 # Nómina Clara — Legal & Payroll Spec
 
-## Scope
+## Purpose
 
-This delta spec covers the legal rates module and the biweekly payroll calculator for individual workers.
+This spec covers the legal rates module and the biweekly payroll calculator for individual workers — rates data, per-concept calculation, storage, import/export, and their scenarios.
+## Requirements
+### Requirement: Rate data structure
 
-## 1. Legal Rates Module (`tarifas-legales.js`)
-
-### 1.1 Rate Data Structure
-
-The module MUST export a frozen constant object `RATES` containing all legal multipliers, limits, and reference values as pure data.
+The module MUST export a frozen constant object `RATES` containing all legal multipliers, limits, and reference values as pure data:
 
 ```javascript
 RATES = {
@@ -43,85 +41,69 @@ RATES = {
 }
 ```
 
-### 1.2 Comments & Legal References
+#### Scenario: RATES exports the frozen legal constants
+- **WHEN** the module is imported
+- **THEN** `RATES` is a frozen constant object with the weekly 42 hours, daily 7 hours, 6:00–19:00 day window, the full surcharge/multiplier maps, OT limits (2/day, 12/week), and the transport-allowance multiplier (2 SMMLV) and value ($200.000, reference 2026)
 
-Each rate MUST include a comment with:
-- The legal concept name in Spanish
-- The specific surcharge percentage
-- Reference to Código Sustantivo del Trabajo and/or Ley 2466/2025 article
+### Requirement: Comments and legal references
 
-### 1.3 Helper Functions
+Each rate MUST include a comment with the legal concept name in Spanish, the specific surcharge percentage, and a reference to Código Sustantivo del Trabajo and/or Ley 2466/2025 article.
 
-Module SHOULD export:
-- `getOrdinaryHourValue(monthlySalary)` → returns hourly rate in COP
-- `getTransportAllowance(monthlySalary)` → returns 0 or reference value based on 2 SMMLV threshold
-- `formatCOP(value)` → returns string formatted as Colombian pesos ($XXX.XXX)
-- `validateOTLimits(dayOT, nightOT, holidayDayOT, holidayNightOT)` → returns `{ valid: boolean, warnings: string[] }`
-- `calculateBreakdown(entries, monthlySalary)` → returns array of concept breakdowns and grand total
+#### Scenario: Every rate carries its Spanish concept and citation
+- **WHEN** inspecting a rate entry in `RATES`
+- **THEN** its comment states the Spanish concept name, the percentage, and the CST and/or Ley 2466/2025 article reference
 
-### 1.4 Maintainability
+### Requirement: Helper functions
 
-The file header MUST contain:
-- File purpose
-- Last updated date
-- Legal basis note
-- Clear instructions on how to update rates when laws change
-- The SMMLV (minimum wage) value as a constant at the top
+The module SHOULD export the following helpers, and each exported helper MUST return its documented type: `getOrdinaryHourValue(monthlySalary)` → hourly rate in COP; `getTransportAllowance(monthlySalary)` → 0 or reference value based on the 2 SMMLV threshold; `formatCOP(value)` → Colombian peso string ($XXX.XXX); `validateOTLimits(dayOT, nightOT, holidayDayOT, holidayNightOT)` → `{ valid: boolean, warnings: string[] }`; `calculateBreakdown(entries, monthlySalary)` → array of concept breakdowns and grand total.
 
-## 2. Calculator (`calculadora.js`)
+#### Scenario: Helpers are exported with the documented signatures
+- **WHEN** the module is imported
+- **THEN** the ordinary-hour, transport-allowance, COP-format, OT-limit validation, and breakdown helpers are exported with their documented signatures and return types
 
-### 2.1 Hourly Rate Computation
+### Requirement: Maintainability
 
-**GIVEN** a monthly salary
-**WHEN** computing the ordinary hour value
-**THEN** value = (salary ÷ 30) ÷ (42 ÷ 6)
-**AND** the result SHALL be displayed in COP format with 2 decimal places
+The file header MUST contain: file purpose, last updated date, legal basis note, clear instructions on how to update rates when laws change, and the SMMLV (minimum wage) value as a constant at the top.
 
-### 2.2 Per-Concept Calculation
+#### Scenario: Header documents purpose, date, and update instructions
+- **WHEN** opening the rates file
+- **THEN** the header shows the file purpose, last updated date, legal basis note, update instructions, and the SMMLV constant at the top
 
-For each hour category, the calculator SHALL compute:
+### Requirement: Hourly rate computation
 
-```
-concept_total = hours × ordinary_hour_value × multiplier
-```
+The calculator MUST compute the ordinary hour value from a monthly salary: `value = (salary ÷ 30) ÷ (42 ÷ 6)`. The result SHALL be displayed in COP format with 2 decimal places.
 
-The breakdown SHALL include: concept name (Spanish), hours, ordinary hour value, surcharge %, multiplier, subtotal.
+#### Scenario: Ordinary hour value from monthly salary
+- **WHEN** computing the ordinary hour value from a monthly salary
+- **THEN** value = (salary ÷ 30) ÷ (42 ÷ 6) and the result is displayed in COP format with 2 decimal places
 
-### 2.3 Concept Categories (in display order)
+### Requirement: Per-concept calculation
 
-1. Salario base (base pay for ordinary hours: 15 days × DAILY_HOURS = 105 hours per quincena)
-2. Recargo nocturno (night surcharge on ordinary hours)
-3. Hora extra diurna
-4. Hora extra nocturna
-5. Recargo dominical/festivo (holiday ordinary hours surcharge)
-6. Recargo nocturno + festivo combinado
-7. Hora extra diurna dominical/festiva
-8. Hora extra nocturna dominical/festiva
-9. Auxilio de transporte (if applicable)
+For each hour category, the calculator SHALL compute `concept_total = hours × ordinary_hour_value × multiplier`. The breakdown SHALL include: concept name (Spanish), hours, ordinary hour value, surcharge %, multiplier, subtotal.
 
-**GIVEN** no overtime or surcharge hours entered
-**WHEN** computing total
-**THEN** only base salary (proportional to quincena) and transportation allowance SHALL be displayed
+#### Scenario: Concept total uses hours, hour value, and multiplier
+- **WHEN** computing any hour category
+- **THEN** concept_total = hours × ordinary_hour_value × multiplier and the breakdown row shows name, hours, hour value, surcharge %, multiplier, and subtotal
 
-### 2.4 Base Pay for the Quincena
+### Requirement: Concept categories in display order
 
-**GIVEN** a monthly salary
-**WHEN** computing the biweekly base pay
-**THEN** base pay = salary ÷ 2
-**AND** this SHALL be the starting amount before adding surcharges and overtime
+The breakdown SHALL list, in order: 1. Salario base (15 días × DAILY_HOURS = 105 horas por quincena), 2. Recargo nocturno, 3. Hora extra diurna, 4. Hora extra nocturna, 5. Recargo dominical/festivo, 6. Recargo nocturno + festivo combinado, 7. Hora extra diurna dominical/festiva, 8. Hora extra nocturna dominical/festiva, 9. Auxilio de transporte (si aplica).
 
-### 2.5 Grand Total
+#### Scenario: Only base and transport allowance with no extras
+- **WHEN** no overtime or surcharge hours are entered and the total is computed
+- **THEN** only base salary (proportional to the quincena) and transportation allowance are displayed
 
-```
-TOTAL = base_pay + auxilio_transporte + Σ(concept_additional)
-```
+### Requirement: Base pay for the quincena
 
-Where:
-- `base_pay = salary ÷ 2` cubre 105 horas ordinarias (7h/día × 15 días)
-- Para **recargos sobre horas ordinarias** (nocturno, festivo): `additional = hours × hour_value × (multiplier - 1)` — solo el excedente, porque basePay ya cubre la hora base
-- Para **horas extra** (OT day, OT night, holiday OT day, holiday OT night): `additional = hours × hour_value × multiplier` — valor completo, porque son horas adicionales NO cubiertas por basePay
+The calculator MUST compute base pay as `salary ÷ 2`, and this SHALL be the starting amount before adding surcharges and overtime.
 
-**Desglose:**
+#### Scenario: Biweekly base pay
+- **WHEN** computing the biweekly base pay from a monthly salary
+- **THEN** base pay = salary ÷ 2 and it is the starting amount before surcharges and overtime
+
+### Requirement: Grand total
+
+The calculator MUST compute `TOTAL = base_pay + auxilio_transporte + Σ(concept_additional)` where: `base_pay = salary ÷ 2` covers 105 ordinary hours (7h/día × 15 días); for **recargos sobre horas ordinarias** (nocturno, festivo): `additional = hours × hour_value × (multiplier − 1)` — only the surplus, because basePay already covers the base hour; for **horas extra** (OT day, OT night, holiday OT day, holiday OT night): `additional = hours × hour_value × multiplier` — full value, because those are additional hours NOT covered by basePay.
 
 | Concepto | Tipo | Fórmula adicional |
 |---|---|---|
@@ -133,37 +115,43 @@ Where:
 | Hora extra diurna dom/fest (×2.15) | Hora extra | hours × hour_value × 2.15 |
 | Hora extra nocturna dom/fest (×2.65) | Hora extra | hours × hour_value × 2.65 |
 
-The GRAND TOTAL displayed SHALL be: base_pay + auxilio + all additional amounts.
+The GRAND TOTAL displayed SHALL be base_pay + auxilio + all additional amounts.
 
-### 2.6 Comparison with Actual Pay
+#### Scenario: Grand total sums base, auxilio, and additions
+- **WHEN** the total is computed
+- **THEN** the grand total equals base_pay + auxilio + all additional amounts per the recargo (multiplier − 1) and hora extra (multiplier) rules above
 
-**GIVEN** the user enters "amount actually paid"
-**WHEN** the calculated total differs
-**THEN** SHOW a color-coded difference:
-- Difference = 0 or positive → green ("Al día" or "Te pagaron más de lo calculado")
-- Difference negative → red ("Te deben $XXX.XXX")
+### Requirement: Comparison with actual pay
 
-### 2.7 Validation Rules
+When the user enters the "amount actually paid" and the calculated total differs, the system MUST SHOW a color-coded difference: difference = 0 or positive → green ("Al día" or "Te pagaron más de lo calculado"); difference negative → red ("Te deben $XXX.XXX").
 
-The calculator SHALL validate:
-- Monthly salary > 0 (MUST)
-- All hour inputs are non-negative numbers (MUST)
-- OT limits: max 2 per day per category, max 12 total OT hours per week (SHOULD warn)
-- Transportation allowance auto-toggle based on 2 SMMLV threshold (MUST)
+#### Scenario: Underpaid shows red alert
+- **WHEN** the calculated total differs and the difference is negative
+- **THEN** a red alert shows "Te deben $XXX.XXX"
 
-### 2.8 Error States
+#### Scenario: Al día or overpaid shows green
+- **WHEN** the difference is 0 or positive
+- **THEN** a green status shows "Al día" or "Te pagaron más de lo calculado"
 
-**GIVEN** invalid input (negative hours, zero salary)
-**WHEN** user clicks "Calcular"
-**THEN** show inline validation error next to the offending field
-**AND** do NOT render results
+### Requirement: Validation rules
 
-## 3. Storage (`storage.js`)
+The calculator SHALL validate: monthly salary > 0 (MUST); all hour inputs are non-negative numbers (MUST); OT limits — max 2 per day per category, max 12 total OT hours per week (SHOULD warn); transportation allowance auto-toggle based on the 2 SMMLV threshold (MUST).
 
-### 3.1 localStorage Schema
+#### Scenario: OT limit warnings are informational
+- **WHEN** a user enters 3 day OT hours + 11 night OT hours
+- **THEN** the warning "Has excedido el límite de 2 horas extra/día en horas extra diurnas" and the warning "Has excedido el límite de 12 horas extra/semana" are shown and the total is still calculated (informational only)
 
-Key: `nomina-clara-records`
-Value: JSON array of record objects:
+### Requirement: Error states
+
+On invalid input (negative hours, zero salary), when the user clicks "Calcular" the system MUST show an inline validation error next to the offending field and MUST NOT render results.
+
+#### Scenario: Invalid input blocks results with inline error
+- **WHEN** invalid input (negative hours, zero salary) is submitted via "Calcular"
+- **THEN** an inline validation error appears next to the offending field and no results are rendered
+
+### Requirement: Storage schema
+
+The storage module MUST persist records under localStorage key `nomina-clara-records` as a JSON array of record objects:
 
 ```javascript
 {
@@ -184,106 +172,139 @@ Value: JSON array of record objects:
 }
 ```
 
-### 3.2 Operations
+#### Scenario: Records persist under the documented key and shape
+- **WHEN** a record is saved
+- **THEN** it is stored in `nomina-clara-records` with the documented fields, including optional `mode`, `scheduleProfile`, and `workedDays` when present
 
-The module SHALL export:
-- `saveRecord(record)` → appends to array in localStorage
-- `getAllRecords()` → returns sorted array (newest first)
-- `getRecord(id)` → single record by ID
-- `deleteRecord(id)` → removes from storage
-- `exportAllData()` → returns full JSON string of all records
-- `importRecords(jsonString)` → merges imported records into localStorage, deduplicates by ID
-- `clearAllRecords()` → removes key (SHOULD confirm first)
+### Requirement: Storage operations
 
-### 3.3 Error Handling
+The module SHALL export: `saveRecord(record)` → appends to the array; `getAllRecords()` → sorted array (newest first); `getRecord(id)` → single record by ID; `deleteRecord(id)` → removes from storage; `exportAllData()` → full JSON string of all records; `importRecords(jsonString)` → merges and deduplicates by ID; `clearAllRecords()` → removes the key (SHOULD confirm first).
 
-- localStorage quota exceeded: catch error and show user-friendly message
-- Corrupted JSON: return empty array and log warning to console
+#### Scenario: CRUD and import/export helpers are exported
+- **WHEN** the storage module is imported
+- **THEN** save, list (newest first), get-by-id, delete, export-all, import-with-dedupe, and clear (with confirmation) operations are available with the documented behavior
 
-## 4. Import/Export (`import-export.js`)
+### Requirement: Storage error handling
 
-### 4.1 Export
+On localStorage quota exceeded, the module MUST catch the error and show a user-friendly message. On corrupted JSON, it MUST return an empty array and log a warning to the console.
 
-**GIVEN** user clicks "Exportar mis datos"
-**WHEN** records exist
-**THEN** generate a `.json` file download with all records
-**AND** filename format: `nomina-clara-{alias}-{YYYY-MM-DD}.json`
+#### Scenario: Quota errors surface a friendly message
+- **WHEN** localStorage quota is exceeded on save
+- **THEN** the error is caught and a user-friendly message is shown
 
-**GIVEN** user clicks "Exportar mis datos"
-**WHEN** no records exist
-**THEN** show message "No hay registros guardados para exportar"
+#### Scenario: Corrupted JSON degrades to an empty array
+- **WHEN** the stored JSON is corrupted
+- **THEN** an empty array is returned and a warning is logged to the console
 
-### 4.2 Import
+### Requirement: Export
 
-**GIVEN** user selects a `.json` file via file input
-**WHEN** the file is loaded
-**THEN** validate JSON structure
-**AND** merge into localStorage via storage.importRecords()
-**AND** show success count
+When the user clicks "Exportar mis datos" and records exist, the system MUST generate a `.json` file download with all records named `nomina-clara-{alias}-{YYYY-MM-DD}.json`. When no records exist, it MUST show "No hay registros guardados para exportar".
 
-**GIVEN** the imported JSON is invalid or missing required fields
-**WHEN** validation fails
-**THEN** show error message "El archivo no tiene el formato esperado"
-**AND** do NOT modify stored data
+#### Scenario: Export with records downloads a named JSON file
+- **WHEN** the user clicks "Exportar mis datos" and records exist
+- **THEN** a `.json` file download with all records is generated and named `nomina-clara-{alias}-{YYYY-MM-DD}.json`
 
-## 5. Scenarios
+#### Scenario: Export with no records shows a message
+- **WHEN** the user clicks "Exportar mis datos" and no records exist
+- **THEN** the message "No hay registros guardados para exportar" is shown
 
-### 5.1 Happy Path — Full OT
+### Requirement: Import
 
-**GIVEN** a user earns $2.600.000/month
-**AND** worked: 4 day OT hours, 2 night hours (not OT), 2 night OT hours
-**AND** the quincena had no holidays
-**WHEN** calculating total
-**THEN** show base pay of $1.300.000
-**AND** show OT breakdown with correct multipliers
-**AND** grand total > base pay
-**AND** transportation allowance is auto-disabled (salary > 2 SMMLV)
+When the user selects a `.json` file via the file input and it loads, the system MUST validate the JSON structure, merge it via `storage.importRecords()`, and show a success count. On invalid JSON or missing required fields, it MUST show "El archivo no tiene el formato esperado" and MUST NOT modify stored data.
 
-### 5.2 Minimum Wage
+#### Scenario: Valid import merges and reports count
+- **WHEN** the user selects a valid `.json` file and it loads
+- **THEN** the JSON is validated, merged into localStorage via `storage.importRecords()`, and a success count is shown
 
-**GIVEN** a user earns $1.423.500/month (2026 SMMLV approx)
-**AND** worked 4 day OT hours
-**WHEN** calculating
-**THEN** transportation allowance auto-applies
-**AND** total reflects both OT and transport allowance
+#### Scenario: Invalid import is rejected without data changes
+- **WHEN** the imported JSON is invalid or missing required fields
+- **THEN** the error "El archivo no tiene el formato esperado" is shown and stored data is not modified
 
-### 5.3 OT Limit Warning
+### Requirement: End-to-end scenarios
 
-**GIVEN** a user enters 3 day OT hours + 11 night OT hours
-**WHEN** validating
-**THEN** show warning "Has excedido el límite de 2 horas extra/día en horas extra diurnas"
-**AND** show warning "Has excedido el límite de 12 horas extra/semana"
-**AND** still calculate the total (informational only)
+The calculator SHALL satisfy the following end-to-end scenarios.
 
-### 5.4 Comparison — Underpaid
+#### Scenario: Happy path — full OT
+- **WHEN** a user earns $2.600.000/month, worked 4 day OT hours, 2 night hours (not OT), 2 night OT hours, and the quincena had no holidays
+- **THEN** base pay of $1.300.000 is shown, the OT breakdown uses the correct multipliers, the grand total is greater than base pay, and the transportation allowance is auto-disabled (salary > 2 SMMLV)
 
-**GIVEN** calculated total is $2.500.000
-**AND** user enters actual pay of $2.300.000
-**WHEN** rendering comparison
-**THEN** show red alert "Te deben $200.000"
+#### Scenario: Minimum wage
+- **WHEN** a user earns $1.423.500/month (2026 SMMLV approx) and worked 4 day OT hours
+- **THEN** the transportation allowance auto-applies and the total reflects both OT and the transport allowance
 
-### 5.5 Comparison — Overpaid
+#### Scenario: OT limit warning
+- **WHEN** a user enters 3 day OT hours + 11 night OT hours and the calculator validates
+- **THEN** both the 2-hours-per-day and 12-hours-per-week warnings are shown and the total is still calculated (informational only)
 
-**GIVEN** calculated total is $2.500.000
-**AND** user enters actual pay of $2.600.000
-**WHEN** rendering comparison
-**THEN** show green alert "Te pagaron $100.000 más de lo calculado"
+#### Scenario: Comparison — underpaid
+- **WHEN** the calculated total is $2.500.000 and the user enters an actual pay of $2.300.000
+- **THEN** a red alert shows "Te deben $200.000"
 
-### 5.6 Empty State
+#### Scenario: Comparison — overpaid
+- **WHEN** the calculated total is $2.500.000 and the user enters an actual pay of $2.600.000
+- **THEN** a green alert shows "Te pagaron $100.000 más de lo calculado"
 
-**GIVEN** user opens the page for the first time
-**WHEN** rendering
-**THEN** show empty form with all fields at 0
-**AND** no results displayed until "Calcular" is clicked
+#### Scenario: Empty state
+- **WHEN** the user opens the page for the first time
+- **THEN** an empty form with all fields at 0 is shown and no results are displayed until "Calcular" is clicked
 
-### 5.7 Print View
+#### Scenario: Print view
+- **WHEN** the user has a calculation result visible and selects File → Print or clicks "Imprimir"
+- **THEN** `@media print` hides buttons, nav, and form controls, and only the breakdown table, totals, and header are shown
 
-**GIVEN** user has a calculation result visible
-**WHEN** selecting File → Print or clicking "Imprimir"
-**THEN** @media print hides buttons, nav, form controls
-**AND** only shows the breakdown table, totals, and header
+### Requirement: Educational block — "Conocé tus derechos laborales"
 
-## 6. Non-Goals
+The system MUST render a second collapsible `<details>` block inside `GlosarioRecargos`, below the existing surcharge section, titled "Conocé tus derechos laborales", containing three prose sections: (1) obligatory rest and compensatory day, (2) legal maximum working hours, (3) how to claim discrepancies. Each section MUST include its precise legal citations.
+
+#### Scenario: Rights block renders below the surcharge glossary
+- **WHEN** the glossary card renders
+- **THEN** a second independently-collapsible block titled "Conocé tus derechos laborales" appears below the surcharge section with the three content sections
+
+#### Scenario: Surcharge glossary remains independently collapsible
+- **WHEN** the rights block is open or closed
+- **THEN** the existing surcharge section toggles independently and is unaffected
+
+### Requirement: Rest and compensatory day content (CST Arts. 172–176, 179–180, Ley 2466/2025)
+
+The system MUST explain the weekly rest day (in principle Sunday, Arts. 172–173 CST), the right to a compensatory day when worked on the obligatory rest day, and the applicable citations including Ley 2466/2025 where relevant.
+
+#### Scenario: Rest section shows obligatory day and compensatory right
+- **WHEN** the rights block's first section renders
+- **THEN** it explains the weekly rest right, the compensatory-day right when the rest day is worked, and cites CST Arts. 172–176 and 179–180
+
+### Requirement: Maximum working hours content (CST Art. 161, Decreto 2352/1965 Art. 22, Ley 2101/2021, Ley 2466/2025)
+
+The system MUST explain the legal maximum working hours and their evolution — CST Art. 161, Decreto 2352/1965 Art. 22, Ley 2101/2021 (42-hour week), Ley 2466/2025 — in plain language with the citations.
+
+#### Scenario: Jornada section shows maximum hours with citations
+- **WHEN** the rights block's second section renders
+- **THEN** it states the legal maximum week and cites CST Art. 161, Decreto 2352/1965 Art. 22, Ley 2101/2021 and Ley 2466/2025
+
+### Requirement: Claim process content (written complaint → Ministry → lawsuit)
+
+The system MUST explain, as a step list, how to claim discrepancies: formal written complaint to the employer, then the Ministry of Labor, then a labor lawsuit.
+
+#### Scenario: Claim section renders a three-step path
+- **WHEN** the rights block's third section renders
+- **THEN** it lists the complaint path in order: written complaint, Ministry of Labor, labor lawsuit
+
+### Requirement: Official links footer with safe new-tab behavior
+
+The system MUST render an official-links footer with the exact official URLs (SUIN CST, SUIN Ley 2466/2025, Función Pública consolidated version), each opening in a new tab with `target="_blank"` and `rel="noopener noreferrer"`.
+
+#### Scenario: Official links open safely in new tabs
+- **WHEN** a worker clicks an official link in the links footer
+- **THEN** the link opens in a new tab with `rel="noopener noreferrer"` and points to the official SUIN or Función Pública URL
+
+### Requirement: Educational disclaimer
+
+The system MUST show an educational disclaimer ("contenido educativo, no asesoría legal" in the app's voice) below the links footer, and MUST NOT present any section as legal advice.
+
+#### Scenario: Disclaimer renders below links
+- **WHEN** the rights block renders
+- **THEN** the educational disclaimer is visible below the links footer
+
+## Non-Goals
 
 - No server-side calculation
 - No user authentication
